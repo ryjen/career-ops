@@ -22,7 +22,7 @@ Tabla con:
 
 ## Bloque B — Match con CV
 
-Lee `cv.md`. Crea tabla con cada requisito del JD mapeado a líneas exactas del CV.
+Lee `data/cv-index.yml` primero si existe. Usa ese índice para localizar roles, proyectos, tecnologias y line refs; luego lee solo los rangos necesarios de `cv.md` para evidencia exacta. Crea tabla con cada requisito del JD mapeado a líneas exactas del CV.
 
 **Adaptado al arquetipo:**
 - Si FDE → priorizar proof points de delivery rápida y client-facing
@@ -149,6 +149,7 @@ Analyze the job posting for signals that indicate whether this is a real, active
 ### 1. Guardar report .md
 
 Guardar evaluación completa en `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
+Después de guardar, ejecutar `node update-report-index.mjs` para mantener `reports/index.tsv` actualizado.
 
 - `{###}` = siguiente número secuencial (3 dígitos, zero-padded)
 - `{company-slug}` = nombre de empresa en lowercase, sin espacios (usar guiones)

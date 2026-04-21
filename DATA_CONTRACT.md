@@ -18,9 +18,13 @@ These files contain your personal data, customizations, and work product. Update
 | `data/pipeline.md` | Your URL inbox |
 | `data/scan-history.tsv` | Your scan history |
 | `data/follow-ups.md` | Your follow-up history |
+| `data/cv-index.yml` | Compact generated index of your CV for low-token matching |
+| `data/resume-overlays/*` | Your local resume overlay rules and reusable role framing |
 | `reports/*` | Your evaluation reports |
+| `reports/index.tsv` | Compact generated report index for low-token lookup |
 | `output/*` | Your generated PDFs |
 | `jds/*` | Your saved job descriptions |
+| `jds/*.digest.yml` | Compact generated JD digests for low-token matching |
 
 ## System Layer (safe to auto-update)
 

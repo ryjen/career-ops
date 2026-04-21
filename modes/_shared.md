@@ -16,10 +16,13 @@
 | article-digest.md | `article-digest.md` (if exists) | ALWAYS (detailed proof points) |
 | profile.yml | `config/profile.yml` | ALWAYS (candidate identity and targets) |
 | _profile.md | `modes/_profile.md` | ALWAYS (user archetypes, narrative, negotiation) |
+| cv-index.yml | `data/cv-index.yml` (if exists) | FIRST PASS (compact CV map + line refs) |
+| reports index | `reports/index.tsv` (if exists) | FIRST PASS for prior evaluations |
 
 **RULE: NEVER hardcode metrics from proof points.** Read them from cv.md + article-digest.md at evaluation time.
 **RULE: For article/project metrics, article-digest.md takes precedence over cv.md.**
 **RULE: Read _profile.md AFTER this file. User customizations in _profile.md override defaults here.**
+**RULE: Prefer compact indexes before full markdown. Use full files only for exact evidence, quote checks, or final generated content.**
 
 ---
 
@@ -101,7 +104,7 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 ### ALWAYS
 
 0. **Cover letter:** If the form allows it, ALWAYS include one. Same visual design as CV. JD quotes mapped to proof points. 1 page max.
-1. Read cv.md, _profile.md, and article-digest.md (if exists) before evaluating
+1. Read `data/cv-index.yml` first when present, then exact `cv.md` line ranges needed for evidence. Read `_profile.md` and `article-digest.md` (if exists) before evaluating.
 1b. **First evaluation of each session:** Run `node cv-sync-check.mjs`. If warnings, notify user.
 2. Detect the role archetype and adapt framing per _profile.md
 3. Cite exact lines from CV when matching
@@ -113,6 +116,14 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 8b. Case study URLs in PDF Professional Summary (recruiter may only read this).
 9. **Tracker additions as TSV** -- NEVER edit applications.md directly. Write TSV in `batch/tracker-additions/`.
 10. **Include `**URL:**` in every report header.**
+
+### Token Discipline
+
+- Run `node build-cv-index.mjs` after changing `cv.md`; prefer `data/cv-index.yml` for matching, section discovery, and line references.
+- Save long JDs under `jds/` when practical, then run `node digest-jd.mjs <jd-file>` and use the `.digest.yml` for routing, archetype detection, and first-pass matching.
+- Run `node update-report-index.mjs` after creating reports; use `reports/index.tsv` before opening prior full reports.
+- Read exact `cv.md`, JD, or report line ranges only when producing cited evidence, final tailored copy, or troubleshooting.
+- Do not read generated PDFs or temporary HTML unless verifying a generation failure.
 
 ### Tools
 

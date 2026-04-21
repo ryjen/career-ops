@@ -1,0 +1,80 @@
+id: appsec
+label: Application Security
+primary_axis: "AppSec / Platform Security"
+status: canonical
+
+match_keywords:
+  - appsec
+  - application security
+  - attack surface
+  - authentication
+  - authorization
+  - burp
+  - ci/cd security
+  - dast
+  - frida
+  - mobfs
+  - mobsf
+  - oauth
+  - oidc
+  - penetration testing
+  - sast
+  - sca
+  - secure code review
+  - secure design
+  - secure sdlc
+  - threat modeling
+  - token
+  - vulnerability
+
+title:
+  value: "Senior / Lead Software Engineer - AI AppSec, Secure SDLC & Platform Security"
+
+strategic_axes:
+  - AI AppSec
+  - Threat Modeling
+  - Secure SDLC
+  - CI/CD Security
+  - Cloud & Platform Controls
+
+summary:
+  framing: "Senior / Lead Software Engineer with 15+ years building and hardening production systems across mobile, backend, platform, and security-sensitive environments."
+  bridge: "Experienced embedding security controls into delivery pipelines, performing secure design and code review, and partnering with engineering teams to identify, validate, and remediate vulnerabilities."
+
+competencies:
+  first:
+    - Threat modeling
+    - Secure design review
+    - Secure code review
+    - Vulnerability remediation
+    - OAuth2/OIDC
+    - Penetration testing
+    - Static and dynamic analysis
+    - Attack surface reduction
+
+experience:
+  Micrantha Software:
+    emphasize:
+      - "Designed authentication and integration workflows with clearer trust boundaries, token handling, validation, and stronger control points across client-server systems."
+      - "Embedded security controls into build and delivery workflows, including secrets handling, validation, policy checks, and artifact protection."
+      - "Operated production systems with observability, monitoring, incident response, and risk-based operational practices."
+  Manulife:
+    emphasize:
+      - "Reduced platform security risk by identifying and remediating vulnerabilities across authentication, analytics, and integration layers."
+      - "Partnered with backend, security, and product teams to align authentication lifecycle design, data contracts, and secure boundary handling."
+  Atimi Software:
+    emphasize:
+      - "Performed security testing on authentication and session flows using dynamic and static analysis tooling."
+      - "Identified vulnerabilities and improved client-backend trust boundaries."
+
+projects:
+  prioritize:
+    - Digitalis
+    - Envuscator
+    - Anthesis
+
+drift_rules:
+  max_bullet_edits: 6
+  no_new_tools: true
+  no_jd_mirroring: true
+  no_scope_inflation: true

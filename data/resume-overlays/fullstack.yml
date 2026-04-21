@@ -1,0 +1,72 @@
+id: fullstack
+label: Fullstack
+primary_axis: "Fullstack"
+status: keep-but-refactor
+
+match_keywords:
+  - api
+  - backend
+  - client
+  - end-to-end
+  - frontend
+  - full stack
+  - full-stack
+  - javascript
+  - mobile
+  - node
+  - python
+  - react
+  - react native
+  - typescript
+  - web
+
+title:
+  value: "Senior / Lead Software Engineer - Full-Stack, Mobile & Backend Systems"
+
+strategic_axes:
+  - Full-Stack Systems
+  - Client-Server Architecture
+  - API Integration
+  - Secure Delivery
+  - Production Reliability
+
+summary:
+  framing: "Senior / Lead Software Engineer with 15+ years building end-to-end systems across mobile, web, backend services, APIs, and delivery infrastructure."
+  bridge: "Experienced translating ambiguous requirements into production behavior across client applications, backend integrations, data flows, and operational tooling."
+
+competencies:
+  first:
+    - Full-stack delivery
+    - React / React Native
+    - TypeScript / JavaScript
+    - Backend APIs
+    - Python services
+    - Client-server coordination
+    - Production troubleshooting
+    - Secure integrations
+
+experience:
+  Micrantha Software:
+    emphasize:
+      - "Designed and operated production systems spanning backend services, client applications, and delivery workflows."
+      - "Built backend services and APIs for authentication, integrations, and operational workflows."
+  Manulife:
+    emphasize:
+      - "Led modernization across client applications and backend integrations in a regulated environment."
+      - "Coordinated client/backend architecture including BFF patterns and API contracts."
+  QuickMobile / Cvent:
+    emphasize:
+      - "Built applications supporting high-concurrency event platforms and backend-integrated workflows."
+      - "Implemented real-time features, analytics, and telemetry systems."
+
+projects:
+  prioritize:
+    - Anthesis
+    - Digitalis
+    - Mysotosis
+
+drift_rules:
+  max_bullet_edits: 6
+  no_new_tools: true
+  no_jd_mirroring: true
+  no_scope_inflation: true

@@ -10,16 +10,33 @@
    - US/Canada → `letter`
    - Resto del mundo → `a4`
 6. Detecta arquetipo del rol → adapta framing
-7. Reescribe Professional Summary inyectando keywords del JD + exit narrative bridge ("Built and sold a business. Now applying systems thinking to [domain del JD].")
-8. Selecciona top 3-4 proyectos más relevantes para la oferta
-9. Reordena bullets de experiencia por relevancia al JD
-10. Construye competency grid desde requisitos del JD (6-8 keyword phrases)
-11. Inyecta keywords naturalmente en logros existentes (NUNCA inventa)
-12. Genera HTML completo desde template + contenido personalizado
-13. Lee `name` de `config/profile.yml` → normaliza a kebab-case lowercase (e.g. "John Doe" → "john-doe") → `{candidate}`
-14. Escribe HTML a `/tmp/cv-{candidate}-{company}.html`
-15. Ejecuta: `node generate-pdf.mjs /tmp/cv-{candidate}-{company}.html output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4}`
-15. Reporta: ruta del PDF, nº páginas, % cobertura de keywords
+7. Resolve local resume overlay:
+   - Save or pipe the JD text to `node resolve-resume-overlay.mjs --json <jd-file>`
+   - Read selected overlay YAML from `data/resume-overlays/`
+   - Use the overlay for title, strategic axes, summary framing, competency ordering, project ordering, and bullet emphasis
+   - Do not use Google Docs as an overlay source
+8. Reescribe Professional Summary usando keywords del JD + selected overlay + exit narrative bridge
+9. Selecciona top 3-4 proyectos más relevantes para la oferta
+10. Reordena bullets de experiencia por relevancia al JD y por overlay
+11. Construye competency grid desde requisitos del JD + selected overlay (6-8 keyword phrases)
+12. Inyecta keywords naturalmente en logros existentes (NUNCA inventa)
+13. Run drift audit mentally before writing final HTML:
+   - no fabricated skills
+   - no JD keyword mirroring
+   - no ownership inflation
+   - no contradictions between title, axes, summary, competencies, and bullets
+14. Genera HTML completo desde template + contenido personalizado
+15. Lee `name` de `config/profile.yml` → normaliza a kebab-case lowercase (e.g. "John Doe" → "john-doe") → `{candidate}`
+16. Escribe HTML a `/tmp/cv-{candidate}-{company}.html`
+17. Ejecuta: `node generate-pdf.mjs /tmp/cv-{candidate}-{company}.html output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4}`
+18. Reporta: ruta del PDF, nº páginas, % cobertura de keywords, overlay seleccionado
+
+## Low-token context path
+
+- If `data/cv-index.yml` exists, read it before `cv.md` to locate the relevant CV line ranges.
+- If the JD is saved in `jds/`, run `node digest-jd.mjs <jd-file>` and use the `.digest.yml` for first-pass keywords, constraints, and archetype.
+- Open full `cv.md` only for the sections being rewritten and for exact truth checks.
+- Do not open previous full reports unless `reports/index.tsv` shows a closely related role that needs reuse.
 
 ## Reglas ATS (parseo limpio)
 

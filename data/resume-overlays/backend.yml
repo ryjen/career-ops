@@ -1,0 +1,78 @@
+id: backend
+label: Backend / Systems
+primary_axis: "Backend / Systems"
+status: canonical
+
+match_keywords:
+  - api
+  - api contract
+  - async
+  - asynchronous
+  - backend
+  - background worker
+  - data modeling
+  - distributed
+  - event-driven
+  - integration
+  - microservices
+  - mysql
+  - node
+  - postgres
+  - python
+  - queue
+  - reliability
+  - service design
+  - sql
+  - system integration
+
+title:
+  value: "Senior / Lead Software Engineer - Backend, Distributed Systems & Trust Infrastructure"
+
+strategic_axes:
+  - Platform Engineering
+  - Secure Integrations
+  - Reliability & Observability
+  - Distributed Systems
+  - Trust Infrastructure
+
+summary:
+  framing: "Senior / Lead Software Engineer with 15+ years building production software across backend systems, distributed services, and client platforms."
+  bridge: "Experienced in service integration, event-driven systems, and cross-service data flows spanning APIs, background workers, and production operations."
+
+competencies:
+  first:
+    - API design
+    - Service integration
+    - Event-driven systems
+    - Async workflows
+    - Relational data modeling
+    - Reliability
+    - Observability
+    - Trust boundaries
+
+experience:
+  Micrantha Software:
+    emphasize:
+      - "Built backend services and APIs for authentication, integrations, operational workflows, data ingestion, and service coordination patterns."
+      - "Designed event-driven workflow systems using queues, background workers, and asynchronous processing, with idempotency, retries, and failure isolation."
+      - "Implemented long-running workflows with persistence, retries, failure recovery, and controlled execution patterns."
+  Manulife:
+    emphasize:
+      - "Coordinated client/backend architecture including BFF patterns and API contracts."
+      - "Improved analytics reliability through backend validation, telemetry improvements, and stronger QA and integration patterns."
+  ePACT Network:
+    emphasize:
+      - "Built data synchronization APIs and hybrid data models using relational and JSON patterns."
+      - "Developed Java backend services on Tomcat/Servlets and supported reliable production operations."
+
+projects:
+  prioritize:
+    - Anthesis
+    - Hyperion
+    - Envuscator
+
+drift_rules:
+  max_bullet_edits: 6
+  no_new_tools: true
+  no_jd_mirroring: true
+  no_scope_inflation: true

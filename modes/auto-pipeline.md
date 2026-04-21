@@ -16,12 +16,15 @@ Si el input es una **URL** (no texto de JD pegado), seguir esta estrategia para 
 
 **Si el input es texto de JD** (no URL): usar directamente, sin necesidad de fetch.
 
+Guardar el JD extraído en `jds/{company-slug}-{YYYY-MM-DD}.md` cuando la empresa pueda identificarse. Luego ejecutar `node digest-jd.mjs <jd-file>` y usar el `.digest.yml` como contexto inicial para arquetipo, keywords, constraints, comp, y matching. Abrir el JD completo solo para evidencia exacta, citas, o contenido final.
+
 ## Paso 1 — Evaluación A-G
 Ejecutar exactamente igual que el modo `oferta` (leer `modes/oferta.md` para todos los bloques A-F + Block G Posting Legitimacy).
 
 ## Paso 2 — Guardar Report .md
 Guardar la evaluación completa en `reports/{###}-{company-slug}-{YYYY-MM-DD}.md` (ver formato en `modes/oferta.md`).
 Include Block G in the saved report. Add `**Legitimacy:** {tier}` to the report header.
+Después de guardar el report, ejecutar `node update-report-index.mjs`.
 
 ## Paso 3 — Generar PDF
 Ejecutar el pipeline completo de `pdf` (leer `modes/pdf.md`).

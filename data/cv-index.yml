@@ -1,0 +1,319 @@
+generated_at: '2026-04-21'
+source: cv.md
+candidate:
+  name: Robert Ryan Jennings
+  headline: Senior / Lead Software Engineer - Mobile, Backend & Full-Stack Systems
+  contact: North Vancouver, BC | (778) 240-3248 | rybertjen@gmail.com | LinkedIn | GitHub
+summary:
+  - line: 7
+    text: >-
+      Strategic axes: Distributed Systems, Platform Engineering, Secure Delivery, Software Architecture, Systems
+      Programming.
+  - line: 9
+    text: >-
+      Senior / Lead Software Engineer with 15+ years building and evolving production software across backend services,
+      distributed systems, mobile applications, and delivery infrastructure. Experienced in translating ambiguous
+      requirements into reliable systems spanning APIs, client-server integrations, asynchronous workflows, and
+      operational tooling across regulated, enterprise, and consumer environments.
+  - line: 11
+    text: >-
+      Strong focus on system integrity, maintainability, performance, security, and reducing operational drag through
+      better architecture, automation, and observability. Recent work includes secure delivery systems, controlled
+      AI-assisted workflows, and platform modernization with an emphasis on practical execution and long-term
+      maintainability.
+roles:
+  - title: Principal Engineer & Consultant
+    company: Micrantha Software
+    line: 15
+    period: Remote / Vancouver, BC | Apr 2016 - Present
+    summary:
+      line: 19
+      text: >-
+        Designed and operated production systems spanning backend services, client applications, and delivery workflows,
+        with an emphasis on integration clarity, system integrity, and long-term maintainability.
+    highlights:
+      - line: 23
+        area: Systems & Backend
+        text: >-
+          Designed event-driven workflow systems using queues, background workers, and asynchronous processing, with
+          idempotency, retries, and failure isolation
+      - line: 24
+        area: Systems & Backend
+        text: >-
+          Built backend services and APIs for authentication, integrations, and operational workflows across internal
+          and third-party systems, including data ingestion and service coordination patterns
+      - line: 25
+        area: Systems & Backend
+        text: >-
+          Implemented long-running workflows with persistence, retries, failure recovery, and controlled execution
+          patterns
+      - line: 29
+        area: Platform & Delivery
+        text: >-
+          Built and operated cloud environments using containers and infrastructure-as-code to improve repeatability,
+          reduce configuration drift, and support reliable service delivery
+      - line: 30
+        area: Platform & Delivery
+        text: Built CI/CD, packaging, and deployment workflows to improve release quality and delivery consistency
+      - line: 34
+        area: Security & Reliability
+        text: >-
+          Designed authentication and integration workflows with clearer trust boundaries, token handling, and
+          validation across client-server systems
+      - line: 35
+        area: Security & Reliability
+        text: >-
+          Applied threat modeling to APIs, client-server interactions, and system boundaries to reduce misuse and
+          failure-prone behavior
+      - line: 36
+        area: Security & Reliability
+        text: >-
+          Embedded security controls into build and delivery workflows, including secrets handling, validation, and
+          artifact protection
+      - line: 40
+        area: AI & Governance
+        text: >-
+          Built AI-assisted and policy-aware workflow systems with controlled execution, approval flows, auditability,
+          and operational safeguards
+      - line: 41
+        area: AI & Governance
+        text: >-
+          Designed controlled automation systems with explicit approval steps, traceability, and failure-aware execution
+          patterns
+      - line: 45
+        area: Operations
+        text: >-
+          Maintained production systems with approximately 10K MAU, handling monitoring, debugging, reliability issues,
+          and production troubleshooting
+      - line: 46
+        area: Operations
+        text: 'Contributor: SAFE-MCP (Linux Foundation), focused on threat modeling and mitigations for agent systems'
+    technologies:
+      - Java
+      - Kotlin
+      - Python
+      - TypeScript/JavaScript
+      - Go
+      - AWS
+      - Docker
+      - Terraform
+      - GitHub Actions
+      - Linux
+  - title: Technical Lead, Platform & Mobile Systems
+    company: Manulife
+    line: 50
+    period: Remote / Toronto / Boston | Apr 2024 - Apr 2025
+    summary:
+      line: 54
+      text: >-
+        Led modernization across client applications and backend integrations in a regulated environment, improving
+        reliability, release quality, security posture, and analytics integrity in coordination with platform, AppSec,
+        and service teams.
+    highlights:
+      - line: 56
+        area: null
+        text: >-
+          Stabilized platform during Azure infrastructure upgrades, resolving build and integration issues and restoring
+          delivery velocity
+      - line: 57
+        area: null
+        text: Improved performance by approximately 20% through state management and asynchronous data-flow optimization
+      - line: 58
+        area: null
+        text: >-
+          Refined authentication-related flows and trust signals in coordination with platform, backend, and security
+          stakeholders
+      - line: 59
+        area: null
+        text: Reduced vulnerabilities by approximately 10% in partnership with AppSec teams
+      - line: 60
+        area: null
+        text: Coordinated client/backend architecture including BFF patterns and API contracts
+      - line: 61
+        area: null
+        text: >-
+          Improved analytics reliability through backend validation, telemetry improvements, and stronger QA and
+          integration patterns for event data across client and service boundaries
+    technologies:
+      - React Native
+      - Expo
+      - JavaScript
+      - TypeScript
+      - Kotlin
+      - Swift
+      - NestJS
+      - Medallia
+      - Adobe
+      - AppSec
+      - telemetry systems
+  - title: Lead Engineer
+    company: OpenArchive
+    line: 65
+    period: Remote / Oakland, CA | Feb 2024 - May 2024
+    summary: null
+    highlights:
+      - line: 69
+        area: null
+        text: >-
+          Designed secure client and backend system patterns for high-risk and adversarial environments, with strong
+          attention to privacy, recoverability, and failure handling
+      - line: 70
+        area: null
+        text: Implemented privacy-focused networking with Tor and secure data handling
+      - line: 71
+        area: null
+        text: Modeled failure handling under unreliable network conditions
+    technologies: []
+  - title: Android Security Developer, Independent Lead
+    company: Atimi Software
+    line: 73
+    period: Vancouver, BC | Oct 2021 - Feb 2023
+    summary: null
+    highlights:
+      - line: 77
+        area: null
+        text: Performed security testing on authentication and session flows using dynamic and static analysis tooling
+      - line: 78
+        area: null
+        text: Identified vulnerabilities and improved client-backend trust boundaries
+      - line: 79
+        area: null
+        text: >-
+          Contributed to modular, API-driven architectures for enterprise applications, improving boundary clarity and
+          maintainability
+    technologies: []
+  - title: Software Engineer II
+    company: QuickMobile / Cvent
+    line: 81
+    period: Vancouver, BC / Remote | Jun 2015 - May 2020
+    summary: null
+    highlights:
+      - line: 85
+        area: null
+        text: >-
+          Built applications supporting high-concurrency event platforms and backend-integrated workflows, with strong
+          emphasis on production behavior, data flows, and observability
+      - line: 86
+        area: null
+        text: >-
+          Implemented real-time features, analytics, and telemetry systems supporting product behavior and operational
+          visibility
+      - line: 87
+        area: null
+        text: Diagnosed and resolved performance, memory, and lifecycle issues using JVM profiling and runtime analysis
+      - line: 88
+        area: null
+        text: >-
+          Awards: BCTIA Emerging Company Award; Wireless Technology Award for innovative mobile platform and
+          beacon-based systems
+    technologies: []
+  - title: Software Engineer
+    company: ePACT Network
+    line: 90
+    period: Vancouver, BC | Apr 2013 - Jun 2015
+    summary: null
+    highlights:
+      - line: 94
+        area: null
+        text: >-
+          Developed Java backend services on Tomcat/Servlets, implementing security fixes including XSS and CSRF
+          protections and supporting reliable production operations in an emergency management platform
+      - line: 95
+        area: null
+        text: >-
+          Built data synchronization APIs and hybrid data models using relational and JSON patterns, aligning dynamic
+          application behavior with indexed query performance and maintainable downstream reporting
+      - line: 96
+        area: null
+        text: >-
+          Developed test automation frameworks improving coverage and reliability; improved performance in
+          document-generation and backend workflow paths
+    technologies: []
+  - title: Earlier Career
+    company: Software Engineering Roles
+    line: 98
+    period: Prior to 2013
+    summary: null
+    highlights:
+      - line: 102
+        area: null
+        text: >-
+          Built backend systems in C/C++ and Java, real-time servers, embedded and connected systems using WiFi, GPS,
+          and ZigBee, and performance-sensitive runtime work
+    technologies: []
+projects:
+  - line: 106
+    name: Anthesis
+    text: Governed AI-assisted SDLC platform for controlled workflows, auditability, and approval-based execution
+  - line: 107
+    name: Digitalis
+    text: >-
+      Client-side security layer for protecting application runtime integrity and securely delivering configuration and
+      secrets
+  - line: 108
+    name: Envuscator
+    text: Build hardening and artifact protection tooling integrated into delivery workflows
+  - line: 109
+    name: Mysotosis
+    text: Experimental edge and device-context system for AI-assisted workflows and execution
+education_certifications:
+  - line: 113
+    text: Diploma, Computer Systems - BCIT
+  - line: 114
+    text: Associate CSSLP - ISC2
+  - line: 115
+    text: Certified Cloud Practitioner - AWS
+  - line: 116
+    text: Certified Java Developer - Sun
+strengths:
+  - line: 120
+    name: Backend & Distributed Systems
+    text: API design, service integration, asynchronous workflows, event-driven patterns, failure-aware execution
+  - line: 121
+    name: Data & Application Architecture
+    text: >-
+      Relational data modeling, relational and JSON patterns, indexing strategies, query performance, client-server
+      coordination
+  - line: 122
+    name: Platform & Delivery
+    text: CI/CD pipelines, GitHub Actions, Docker, Terraform, environment automation, release reliability
+  - line: 123
+    name: Security & Reliability
+    text: OAuth2/OIDC, authentication systems, threat modeling, secure coding, secure SDLC, production troubleshooting
+  - line: 124
+    name: Mobile & Client Systems
+    text: Android, iOS, React Native, runtime behavior, state/data flow, performance tuning
+  - line: 125
+    name: Languages & Tooling
+    text: Java, Kotlin, Python, Go, TypeScript, JavaScript, C/C++, PostgreSQL, MySQL, SQLite, Linux
+technologies:
+  - Java
+  - Kotlin
+  - Python
+  - TypeScript
+  - JavaScript
+  - Go
+  - C/C++
+  - AWS
+  - Azure
+  - Docker
+  - Terraform
+  - GitHub Actions
+  - Linux
+  - React Native
+  - Expo
+  - Swift
+  - NestJS
+  - PostgreSQL
+  - MySQL
+  - SQLite
+  - Tomcat
+  - Servlets
+  - Tor
+  - OAuth2/OIDC
+line_refs:
+  summary:
+    - 7
+    - 9
+    - 11
+  experience_start: 13

@@ -1,0 +1,71 @@
+id: mobile
+label: Mobile / Client Systems
+primary_axis: "Mobile / Client Systems"
+status: canonical
+
+match_keywords:
+  - android
+  - client
+  - client-server
+  - compose
+  - expo
+  - ios
+  - kotlin
+  - mobile
+  - react native
+  - runtime
+  - state management
+  - swift
+  - telemetry
+
+title:
+  value: "Senior / Lead Software Engineer - Mobile, Client Systems & Secure Delivery"
+
+strategic_axes:
+  - Client Architecture
+  - Mobile Runtime Behavior
+  - Secure Client-Server Systems
+  - State & Data Flow
+  - Production Reliability
+
+summary:
+  framing: "Senior / Lead Software Engineer with deep experience building mobile and client systems across Android, iOS, React Native, backend integrations, and production delivery."
+  bridge: "Strong focus on runtime behavior, state/data flow, client-server trust boundaries, performance, telemetry, and secure delivery."
+
+competencies:
+  first:
+    - Android
+    - iOS
+    - React Native
+    - Kotlin
+    - Swift
+    - State management
+    - Client-server coordination
+    - Runtime performance
+
+experience:
+  Manulife:
+    emphasize:
+      - "Led modernization across client applications and backend integrations in a regulated environment."
+      - "Improved performance by approximately 20% through state management and asynchronous data-flow optimization."
+      - "Coordinated client/backend architecture including BFF patterns and API contracts."
+  Atimi Software:
+    emphasize:
+      - "Contributed to modular, API-driven architectures for enterprise applications."
+      - "Performed security testing on authentication and session flows."
+  QuickMobile / Cvent:
+    emphasize:
+      - "Built applications supporting high-concurrency event platforms and backend-integrated workflows."
+      - "Diagnosed and resolved performance, memory, and lifecycle issues using JVM profiling and runtime analysis."
+
+projects:
+  prioritize:
+    - Digitalis
+    - Mysotosis
+    - Anthesis
+
+drift_rules:
+  max_bullet_edits: 6
+  no_new_tools: true
+  no_jd_mirroring: true
+  no_scope_inflation: true

@@ -1,0 +1,28 @@
+version: 1
+default_base: cv.md
+selection:
+  primary_min_score: 2
+  secondary_min_score: 2
+  max_secondary: 1
+overlays:
+  - id: ai-security-control
+    file: ai-security-control.yml
+    axis: "AI / Governance / Security Controls"
+  - id: appsec
+    file: appsec.yml
+    axis: "AppSec / Platform Security"
+  - id: backend
+    file: backend.yml
+    axis: "Backend / Systems"
+  - id: platform
+    file: platform.yml
+    axis: "Platform / Infrastructure"
+  - id: fullstack
+    file: fullstack.yml
+    axis: "Fullstack"
+  - id: mobile
+    file: mobile.yml
+    axis: "Mobile / Client Systems"
+  - id: solutions-architect
+    file: solutions-architect.yml
+    axis: "Solutions Architect / Broad Technical Leadership"

@@ -1,0 +1,75 @@
+id: ai-security-control
+label: AI Security Control
+primary_axis: "AI / Governance / Security Controls"
+status: canonical
+
+match_keywords:
+  - agentic
+  - ai security
+  - ai governance
+  - ai-assisted
+  - approval flow
+  - approval flows
+  - auditability
+  - autonomous
+  - controlled execution
+  - governance
+  - human-in-the-loop
+  - llm workflow
+  - policy enforcement
+  - provenance
+  - secure agent
+  - tool misuse
+  - workflow orchestration
+
+title:
+  value: "Senior / Lead Software Engineer - AI Security, Platform & Distributed Systems"
+
+strategic_axes:
+  - AI Security Controls
+  - Site Reliability
+  - Platform Engineering
+  - Secure Delivery
+  - Software Architecture
+
+summary:
+  framing: "Senior / Lead Software Engineer with 15+ years building production software across backend services, distributed systems, client platforms, and delivery infrastructure, with depth in security-critical and AI-adjacent systems."
+  bridge: "Recent work includes controlled AI-assisted workflows, security-aware delivery systems, threat modeling for agentic systems, and platform modernization with an emphasis on auditability and operational resilience."
+
+competencies:
+  first:
+    - AI/agent security
+    - controlled execution
+    - approval flows
+    - auditability
+    - threat modeling
+    - secure SDLC
+    - policy guardrails
+    - production reliability
+
+experience:
+  Micrantha Software:
+    lead_sentence: "Designed and operated production systems spanning backend services, client applications, and delivery workflows, with emphasis on integration clarity, system integrity, production reliability, and long-term maintainability."
+    emphasize:
+      - "Built AI-assisted and policy-aware workflow systems with controlled execution, approval flows, auditability, operational safeguards, and explicit human-control boundaries."
+      - "Applied threat modeling to APIs, client-server interactions, agent/tool boundaries, and system trust surfaces to reduce misuse and failure-prone behavior."
+      - "Embedded security controls into build and delivery workflows, including secrets handling, validation, policy checks, and artifact protection."
+      - "Implemented long-running workflows with persistence, retries, failure recovery, controlled execution patterns, and explicit operational safeguards."
+  Manulife:
+    emphasize:
+      - "Refined authentication-related flows and trust signals in coordination with platform, backend, and security stakeholders."
+      - "Reduced vulnerabilities in partnership with AppSec teams."
+      - "Improved telemetry reliability through backend validation, instrumentation improvements, and stronger QA and integration patterns."
+
+projects:
+  prioritize:
+    - Anthesis
+    - Digitalis
+    - Envuscator
+    - Mysotosis
+
+drift_rules:
+  max_bullet_edits: 6
+  no_new_tools: true
+  no_jd_mirroring: true
+  no_scope_inflation: true

@@ -1,0 +1,72 @@
+id: platform
+label: Platform / Infrastructure
+primary_axis: "Platform / Infrastructure"
+status: canonical
+
+match_keywords:
+  - ansible
+  - aws
+  - azure
+  - ci/cd
+  - cloud
+  - cloudformation
+  - developer platform
+  - devops
+  - docker
+  - gitops
+  - github actions
+  - infrastructure
+  - infrastructure-as-code
+  - kubernetes
+  - linux
+  - observability
+  - platform
+  - reliability
+  - terraform
+
+title:
+  value: "Senior / Lead Software Engineer - Platform, Backend & Secure Systems"
+
+strategic_axes:
+  - Developer Platforms
+  - Backend Systems
+  - Secure Delivery
+  - Reliability & Observability
+
+summary:
+  framing: "Senior / Lead Software Engineer with 15+ years building production systems across backend services, platform infrastructure, secure client-server systems, and delivery workflows."
+  bridge: "Recent work spans backend and platform delivery across cloud, containers, CI/CD automation, operational troubleshooting, and cross-system integration."
+
+competencies:
+  first:
+    - CI/CD
+    - Infrastructure-as-code
+    - Docker
+    - Kubernetes
+    - Terraform
+    - GitHub Actions
+    - Observability
+    - Production operations
+
+experience:
+  Micrantha Software:
+    emphasize:
+      - "Built and operated cloud environments using containers and infrastructure-as-code to improve repeatability, reduce configuration drift, and support reliable service delivery."
+      - "Built CI/CD, packaging, and deployment workflows to improve release quality and delivery consistency."
+      - "Maintained production systems with monitoring, debugging, reliability issues, and production troubleshooting."
+  Manulife:
+    emphasize:
+      - "Stabilized platform during Azure infrastructure upgrades, resolving build and integration issues and restoring delivery velocity."
+      - "Contributed to pipeline and delivery workflows in a large enterprise environment."
+
+projects:
+  prioritize:
+    - Anthesis
+    - Envuscator
+    - Hyperion
+
+drift_rules:
+  max_bullet_edits: 6
+  no_new_tools: true
+  no_jd_mirroring: true
+  no_scope_inflation: true

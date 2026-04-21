@@ -1,0 +1,69 @@
+id: solutions-architect
+label: Solutions Architect
+primary_axis: "Solutions Architect / Broad Technical Leadership"
+status: canonical
+
+match_keywords:
+  - architecture
+  - client-facing
+  - consulting
+  - cross-functional
+  - discovery
+  - enterprise
+  - integration
+  - roadmap
+  - solution design
+  - solutions architect
+  - stakeholder
+  - technical leadership
+  - transformation
+
+title:
+  value: "Senior / Lead Software Engineer - Solutions Architecture & Secure Systems"
+
+strategic_axes:
+  - System Design
+  - Enterprise Integrations
+  - Secure Delivery
+  - Stakeholder Translation
+  - Platform Modernization
+
+summary:
+  framing: "Senior / Lead Software Engineer with 15+ years translating ambiguous requirements into reliable systems across APIs, client-server integrations, asynchronous workflows, and operational tooling."
+  bridge: "Effective at bridging business needs, architecture constraints, implementation details, and long-term maintainability across regulated, enterprise, and client-facing environments."
+
+competencies:
+  first:
+    - Solution design
+    - Stakeholder translation
+    - API integration
+    - Platform modernization
+    - Secure architecture
+    - Delivery planning
+    - Technical leadership
+    - Operational reliability
+
+experience:
+  Micrantha Software:
+    emphasize:
+      - "Designed and operated production systems spanning backend services, client applications, and delivery workflows."
+      - "Built backend services and APIs for authentication, integrations, and operational workflows across internal and third-party systems."
+  Manulife:
+    emphasize:
+      - "Led modernization across client applications and backend integrations in a regulated environment."
+      - "Coordinated client/backend architecture including BFF patterns, API contracts, telemetry, backend validation, and analytics reliability."
+  OpenArchive:
+    emphasize:
+      - "Designed secure client and backend system patterns for high-risk and adversarial environments."
+
+projects:
+  prioritize:
+    - Anthesis
+    - Digitalis
+    - Envuscator
+
+drift_rules:
+  max_bullet_edits: 6
+  no_new_tools: true
+  no_jd_mirroring: true
+  no_scope_inflation: true
