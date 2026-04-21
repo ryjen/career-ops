@@ -14,6 +14,30 @@ Claude workflow.
 - Playwright Chromium installed for PDF generation and reliable job verification
 - Go 1.21+ if you want the TUI dashboard
 
+## Codex Command Skill
+
+Career-Ops provides a Codex skill at `.codex/skills/career-ops`. Install it into
+your local Codex skills directory:
+
+```bash
+mkdir -p ~/.codex/skills
+cp -R .codex/skills/career-ops ~/.codex/skills/
+```
+
+Restart Codex after installing. Use the skill with Codex's `$` skill syntax:
+
+```text
+$career-ops
+$career-ops scan
+$career-ops tracker
+$career-ops pdf
+$career-ops https://example.com/job
+```
+
+Some Codex surfaces show enabled skills in the slash command list. Codex CLI's
+documented slash commands are session controls, so `$career-ops` is the portable
+entrypoint for project workflows.
+
 ## Install
 
 ```bash
@@ -31,7 +55,8 @@ npx playwright install chromium
 
 | User intent | Files Codex should read |
 |-------------|-------------------------|
-| Raw JD text or job URL | `modes/_shared.md` + `modes/auto-pipeline.md` |
+| `$career-ops` with no arguments | `.codex/skills/career-ops/SKILL.md` |
+| Raw JD text or job URL | `.codex/skills/career-ops/SKILL.md` + `modes/_shared.md` + `modes/auto-pipeline.md` |
 | Single evaluation only | `modes/_shared.md` + `modes/oferta.md` |
 | Multiple offers | `modes/_shared.md` + `modes/ofertas.md` |
 | Portal scan | `modes/_shared.md` + `modes/scan.md` |
