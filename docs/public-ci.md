@@ -16,6 +16,20 @@ Public pull requests are untrusted. Validation runs only on fixed GitHub-hosted 
 
 `scripts/workflow-policy.mjs` parses the workflow YAML into a structured model before applying these rules. Unsupported YAML directives, aliases, anchors, tags, and merge keys fail closed rather than bypassing the policy model.
 
+## Dependency review
+
+Public pull requests first invoke GitHub's pinned official dependency-review action. Some new repositories do not yet have the GitHub dependency graph enabled. The workflow may tolerate failure from that one exact action only when all of these safeguards are present:
+
+- the action has the approved immutable commit identity and `id: dependency-review`;
+- checkout fetched full history without persisting credentials;
+- a later step runs only when `steps.dependency-review.outcome == 'failure'`;
+- the fallback base ref comes only from `github.base_ref`;
+- `scripts/dependency-diff.mjs` validates both package/lock states and reports the deterministic dependency delta.
+
+The fallback rejects package/lock drift, local, Git, workspace, URL, SSH, and other non-registry dependency sources, non-npm registry lock resolutions, and missing lockfile integrity metadata. It does **not** replace GitHub advisory or license analysis. A supported release therefore still requires the complete dependency and license report tracked by the disclosure and release gates.
+
+Any other `continue-on-error` setting is rejected by policy.
+
 ## Dependency updates
 
 Dependabot opens grouped weekly GitHub Actions and npm update pull requests. Updates receive the same CI and dependency-review checks as other pull requests. No workflow has permission or commands to auto-merge them.
