@@ -1,13 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const roots = ['src', 'schemas', 'fixtures', 'test', 'scripts', 'docs'];
+const roots = ['src', 'schemas', 'fixtures', 'test', 'scripts', 'docs', '.github'];
 const rootFiles = [
   '.gitignore', '.nvmrc', 'README.md', 'SECURITY.md', 'SUPPORT.md',
   'CONTRIBUTING.md', 'GOVERNANCE.md', 'CODE_OF_CONDUCT.md',
   'package.json', 'package-lock.json', 'mise.toml',
 ];
-const extensions = new Set(['.js', '.mjs', '.json', '.md', '.toml']);
+const extensions = new Set(['.js', '.mjs', '.json', '.md', '.toml', '.yml', '.yaml']);
 const failures = [];
 
 function checkFile(file) {
