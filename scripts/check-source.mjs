@@ -15,9 +15,14 @@ const forbidden = [
 const javascriptFiles = [];
 const textFiles = [];
 const textExtensions = new Set(['.js', '.mjs', '.json', '.md', '.toml', '.yml', '.yaml']);
+const rootFiles = [
+  '.gitignore', '.nvmrc', 'README.md', 'SECURITY.md', 'SUPPORT.md',
+  'CONTRIBUTING.md', 'GOVERNANCE.md', 'CODE_OF_CONDUCT.md',
+  'package.json', 'package-lock.json', 'mise.toml',
+];
 
 function addFile(file) {
-  if (!textExtensions.has(path.extname(file)) && !['README.md', 'SECURITY.md', 'SUPPORT.md', 'CONTRIBUTING.md', 'GOVERNANCE.md'].includes(file)) return;
+  if (!textExtensions.has(path.extname(file)) && !rootFiles.includes(file)) return;
   textFiles.push(file);
   if (/\.(?:js|mjs)$/.test(file)) javascriptFiles.push(file);
 }
@@ -31,7 +36,7 @@ function walk(directory) {
 }
 
 for (const root of ['src', 'scripts', 'test', 'schemas', 'fixtures', 'docs']) if (fs.existsSync(root)) walk(root);
-for (const file of ['README.md', 'SECURITY.md', 'SUPPORT.md', 'CONTRIBUTING.md', 'GOVERNANCE.md', 'package.json', 'mise.toml']) if (fs.existsSync(file)) addFile(file);
+for (const file of rootFiles) if (fs.existsSync(file)) addFile(file);
 
 for (const file of javascriptFiles) execFileSync(process.execPath, ['--check', file], { stdio: 'inherit' });
 for (const file of textFiles) {
