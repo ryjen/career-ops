@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://career-ops.dev/schemas/smoke-input.v1.schema.json",
+  "title": "CareerOps bootstrap smoke input v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_name", "contract_version", "message"],
+  "properties": {
+    "contract_name": { "const": "career-ops.smoke" },
+    "contract_version": { "const": 1 },
+    "message": { "type": "string", "minLength": 1, "maxLength": 120 }
+  }
+}

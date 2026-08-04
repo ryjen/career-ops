@@ -1,0 +1,34 @@
+[tools]
+node = "20.20.2"
+
+[tasks.setup]
+description = "Install the locked dependency graph without lifecycle scripts"
+run = "npm ci --ignore-scripts"
+
+[tasks.format]
+description = "Check repository text formatting"
+run = "npm run format:check"
+
+[tasks.lint]
+description = "Check JavaScript syntax and architecture boundaries"
+run = "npm run lint"
+
+[tasks.test]
+description = "Run the public test suite"
+run = "npm test"
+
+[tasks.schema]
+description = "Validate public JSON Schema documents"
+run = "npm run schema:validate"
+
+[tasks.build]
+description = "Verify the importable package surface"
+run = "npm run build"
+
+[tasks.pack]
+description = "Inspect the package archive without publishing"
+run = "npm run pack:check"
+
+[tasks.verify]
+description = "Run every local release-readiness check"
+depends = ["format", "lint", "schema", "test", "build", "pack"]
