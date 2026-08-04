@@ -35,7 +35,7 @@ function walk(directory) {
   }
 }
 
-for (const root of ['src', 'scripts', 'test', 'schemas', 'fixtures', 'docs']) if (fs.existsSync(root)) walk(root);
+for (const root of ['src', 'scripts', 'test', 'schemas', 'fixtures', 'docs', '.github']) if (fs.existsSync(root)) walk(root);
 for (const file of rootFiles) if (fs.existsSync(file)) addFile(file);
 
 for (const file of javascriptFiles) execFileSync(process.execPath, ['--check', file], { stdio: 'inherit' });
