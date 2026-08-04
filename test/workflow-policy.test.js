@@ -9,6 +9,8 @@ import {
 
 const pinned = '0123456789abcdef0123456789abcdef01234567';
 const concurrencyExpression = '${{ github.ref }}';
+const githubBaseRefExpression = '${{ github.base_ref }}';
+const shellBaseRef = '${BASE_REF}';
 const safe = `
 name: CI
 on:
@@ -112,6 +114,26 @@ test('requires grouped weekly npm and GitHub Actions dependency updates', () => 
   const ungrouped = structuredClone(config);
   delete ungrouped.updates[0].groups;
   assert.match(validateDependabotConfig(ungrouped).join('\n'), /grouping is required/);
+});
+
+test('allows only the pinned dependency review action with a mandatory fail-closed fallback', () => {
+  const dependencyReview = safe.replace(
+    '      - run: npm test',
+    `      - uses: actions/checkout@${pinned}\n        with:\n          fetch-depth: 0\n          persist-credentials: false\n      - id: dependency-review\n        continue-on-error: true\n        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294\n      - if: steps.dependency-review.outcome == 'failure'\n        env:\n          BASE_REF: ${githubBaseRefExpression}\n        run: node scripts/dependency-diff.mjs --base \"origin/${shellBaseRef}\"`,
+  );
+  assert.deepEqual(errors(dependencyReview), []);
+
+  const arbitrary = safe.replace('      - run: npm test', '      - continue-on-error: true\n        run: npm test');
+  assert.match(errors(arbitrary).join('\n'), /allowed only for the pinned official dependency-review action/);
+
+  const missingFallback = safe.replace(
+    '      - run: npm test',
+    '      - id: dependency-review\n        continue-on-error: true\n        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294',
+  );
+  assert.match(errors(missingFallback).join('\n'), /requires the fail-closed dependency-diff fallback/);
+
+  const badBase = dependencyReview.replace('BASE_REF: ${{ github.base_ref }}', 'BASE_REF: ${{ github.head_ref }}');
+  assert.match(errors(badBase).join('\n'), /BASE_REF must come only from github.base_ref/);
 });
 
 test('rejects install lifecycle scripts', () => {
