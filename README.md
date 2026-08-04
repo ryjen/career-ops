@@ -1,2 +1,61 @@
-# career-ops
-Open-source framework for evidence-driven career operations, including opportunity intake, fit scoring, resume tailoring, claim validation, and application lifecycle workflows.
+# CareerOps
+
+CareerOps is a deterministic, evidence-driven framework for career operations. It is designed for developers who need versioned contracts and reusable algorithms without built-in access to email, trackers, private repositories, hosted services, or personal policy.
+
+## Project status
+
+The repository is establishing its public architecture and trust boundaries. The bootstrap package contains a synthetic smoke contract only. Opportunity normalization and validation will be the first supported domain slice.
+
+## Design principles
+
+- explicit bounded input rather than implicit discovery;
+- deterministic output for equivalent input, time, taxonomy, and policy;
+- observed, inferred, unresolved, proposed, and canonical values remain distinct;
+- library APIs own behavior and the CLI remains thin composition glue;
+- policies, clocks, taxonomies, repositories, and identifiers are injected when they affect behavior;
+- local and read-only by default;
+- independently invented synthetic fixtures only;
+- no provider credentials, private infrastructure, or mutation authority in the public core.
+
+## Bootstrap smoke path
+
+```bash
+mise run setup
+mise run verify
+printf '%s\n' '{"contract_name":"career-ops.smoke","contract_version":1,"message":"hello"}' \
+  | node src/cli.js smoke
+```
+
+The CLI reads only explicit stdin or `--input`, writes only stdout or a new `--output` file, and performs no network access.
+
+## Package architecture
+
+CareerOps starts as one ESM JavaScript package:
+
+```text
+src/contracts/   versioned runtime contract validators
+src/core/        deterministic domain behavior
+src/cli.js       explicit I/O adapter
+schemas/         JSON Schema 2020-12 interchange contracts
+fixtures/        independently synthetic scenarios
+docs/adr/        architectural decisions
+```
+
+A package split requires demonstrated independent versioning, dependency, release-cadence, ownership, or runtime needs.
+
+## Compatibility
+
+- Node.js 20 or newer;
+- ESM package exports;
+- CommonJS consumers use dynamic `import()` at their adapter boundary;
+- package semantic versions and contract/schema versions evolve independently when necessary.
+
+See [architecture](docs/architecture.md), [compatibility](docs/compatibility.md), and the [ADR index](docs/adr/README.md).
+
+## Security and privacy
+
+Do not submit real resumes, applications, correspondence, contact details, credentials, private paths, or transformed private fixtures. See [SECURITY.md](SECURITY.md), the [threat model](docs/threat-model.md), and the [synthetic-data policy](docs/synthetic-data-policy.md).
+
+## License
+
+CareerOps is licensed under MPL-2.0. Separate consumer adapters may use other licenses when they remain in separate files and comply with applicable MPL obligations. See [MPL adapter guidance](docs/mpl-adapters.md).
