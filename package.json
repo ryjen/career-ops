@@ -28,10 +28,11 @@
     "setup": "npm ci --ignore-scripts",
     "format:check": "node scripts/check-format.mjs",
     "lint": "node scripts/check-source.mjs",
+    "workflow:validate": "node scripts/check-workflows.mjs",
     "schema:validate": "node scripts/validate-schemas.mjs",
     "test": "node --test",
     "build": "node scripts/build.mjs",
     "pack:check": "npm pack --dry-run --ignore-scripts",
-    "verify": "npm run format:check && npm run lint && npm run schema:validate && npm test && npm run build && npm run pack:check"
+    "verify": "npm run format:check && npm run lint && npm run workflow:validate && npm run schema:validate && npm test && npm run build && npm run pack:check"
   }
 }
