@@ -16,6 +16,9 @@ const LIFECYCLE_SCRIPTS = new Set([
 const DANGEROUS_RUN_CONTEXT = /\$\{\{[^}]*github\.event\.(?:issue|discussion|comment|review|pull_request)\.(?:body|title)[^}]*\}\}/i;
 const RELEASE_COMMAND = /(?:^|\s)(?:npm\s+publish|pnpm\s+publish|yarn\s+npm\s+publish|gh\s+release|docker\s+push)(?:\s|$)/m;
 const AUTO_MERGE_COMMAND = /(?:gh\s+pr\s+merge|enablePullRequestAutoMerge)/i;
+const DEPENDENCY_REVIEW_USE = 'actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294';
+const DEPENDENCY_FALLBACK_RUN = /\bnode\s+scripts\/dependency-diff\.mjs\s+--base\s+["']origin\/\$\{BASE_REF\}["']/;
+const DEPENDENCY_FALLBACK_IF = /steps\.dependency-review\.outcome\s*==\s*["']failure["']/;
 
 function eventNames(on) {
   if (typeof on === 'string') return [on];
@@ -76,6 +79,52 @@ function usesErrors(workflow, filename, root) {
       if (!DOCKER_USE.test(value)) errors.push(`${filename}: Docker action must use an immutable sha256 digest: ${value}`);
     } else if (!EXTERNAL_USE.test(value)) {
       errors.push(`${filename}: external action or reusable workflow must use a full 40-character commit SHA: ${value}`);
+    }
+  }
+  return errors;
+}
+
+function continueOnErrorErrors(job, label) {
+  const errors = [];
+  const steps = Array.isArray(job.steps) ? job.steps : [];
+  for (let index = 0; index < steps.length; index += 1) {
+    const step = steps[index];
+    if (!step || typeof step !== 'object' || Array.isArray(step)) continue;
+    const setting = step['continue-on-error'];
+    if (setting === undefined || setting === false) continue;
+    if (setting !== true) {
+      errors.push(`${label}: continue-on-error must be false or the approved dependency-review fallback exception`);
+      continue;
+    }
+    const approved = step.id === 'dependency-review' && step.uses === DEPENDENCY_REVIEW_USE;
+    if (!approved) {
+      errors.push(`${label}: continue-on-error is allowed only for the pinned official dependency-review action`);
+      continue;
+    }
+    const fallback = steps.slice(index + 1).find((candidate) => (
+      candidate
+      && typeof candidate === 'object'
+      && !Array.isArray(candidate)
+      && typeof candidate.if === 'string'
+      && DEPENDENCY_FALLBACK_IF.test(candidate.if)
+      && typeof candidate.run === 'string'
+      && DEPENDENCY_FALLBACK_RUN.test(candidate.run)
+    ));
+    if (!fallback) {
+      errors.push(`${label}: dependency-review continue-on-error requires the fail-closed dependency-diff fallback`);
+      continue;
+    }
+    if (fallback.env?.BASE_REF !== '${{ github.base_ref }}') {
+      errors.push(`${label}: dependency fallback BASE_REF must come only from github.base_ref`);
+    }
+    const checkout = [...steps.slice(0, index)].reverse().find((candidate) => (
+      candidate
+      && typeof candidate === 'object'
+      && typeof candidate.uses === 'string'
+      && candidate.uses.startsWith('actions/checkout@')
+    ));
+    if (checkout?.with?.['fetch-depth'] !== 0) {
+      errors.push(`${label}: dependency fallback requires checkout fetch-depth: 0`);
     }
   }
   return errors;
@@ -148,6 +197,7 @@ export function validateWorkflow(workflow, filename = '<workflow>', options = {}
         if (step.with?.['persist-credentials'] !== false) errors.push(`${label}: checkout must set persist-credentials: false`);
       }
     }
+    errors.push(...continueOnErrorErrors(job, label));
     for (const run of collectValues(job, 'run')) {
       if (typeof run === 'string' && DANGEROUS_RUN_CONTEXT.test(run)) {
         errors.push(`${label}: source-controlled text cannot be interpolated into shell commands`);
