@@ -17,6 +17,10 @@ run = "npm run lint"
 description = "Validate GitHub Actions trust boundaries"
 run = "npm run workflow:validate"
 
+[tasks.dependency]
+description = "Validate dependency manifests and fallback review logic"
+run = "npm run dependency:validate"
+
 [tasks.test]
 description = "Run the public test suite"
 run = "npm test"
@@ -35,4 +39,4 @@ run = "npm run pack:check"
 
 [tasks.verify]
 description = "Run every local release-readiness check"
-depends = ["format", "lint", "workflow", "schema", "test", "build", "pack"]
+depends = ["format", "lint", "workflow", "dependency", "schema", "test", "build", "pack"]
