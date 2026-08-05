@@ -189,11 +189,10 @@ function collectRequirements(text) {
   text.split('\n').forEach((sourceLine) => {
     const trimmed = sourceLine.trim();
     if (!trimmed || /^(?:company|title|url)\s*:/i.test(trimmed)) return;
-    const bullet = /^[-*•]\s+/.test(trimmed);
     const normalized = trimmed.replace(/^[-*•]\s+/, '').replace(/\s+/g, ' ').trim();
     const lower = normalized.toLowerCase();
     const keywordMatch = REQUIREMENT_KEYWORDS.some((keyword) => lower.includes(keyword));
-    if (!bullet && !keywordMatch) return;
+    if (!keywordMatch) return;
     if (requirements.includes(normalized)) return;
     if (requirements.length >= 30) {
       truncated = true;
@@ -208,12 +207,6 @@ function addUnresolved(unresolved, field, reason) {
   unresolved.push({ field, reason });
 }
 
-/**
- * Deterministically normalize an explicit opportunity source.
- *
- * @param {unknown} input
- * @returns {object}
- */
 export function normalizeOpportunity(input) {
   if (input && typeof input === 'object' && !Array.isArray(input)) {
     if (input.contract_name === opportunityNormalizationContract.inputContractName
@@ -263,6 +256,13 @@ export function normalizeOpportunity(input) {
   }
 
   const compensation = inferCompensation(text);
+  if (compensation.min !== null && compensation.max !== null && compensation.max < compensation.min) {
+    warnings.push({
+      code: 'REVERSED_COMPENSATION_RANGE',
+      message: 'The inferred compensation maximum is lower than the minimum and requires review.',
+      path: 'opportunity.inferred.compensation',
+    });
+  }
   if (compensation.min !== null && compensation.currency === null) {
     addUnresolved(unresolved, 'compensation.currency', 'A compensation range was found without one unambiguous currency.');
   }
