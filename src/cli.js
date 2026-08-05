@@ -52,6 +52,12 @@ function exitCode(error) {
 try {
   const options = parseArgs(process.argv.slice(2));
   const raw = await readInput(options.input);
+  const maximumBytes = options.command === 'smoke' ? 16_384 : 262_144;
+  if (Buffer.byteLength(raw, 'utf8') > maximumBytes) {
+    const error = new RangeError(`input exceeds the ${maximumBytes}-byte CLI limit`);
+    error.code = 'ERR_INPUT_BOUNDS';
+    throw error;
+  }
   const parsed = JSON.parse(raw);
   const result = options.command === 'smoke' ? runSmoke(parsed) : normalizeOpportunity(parsed);
   await writeOutput(options.output, `${JSON.stringify(result, null, 2)}\n`);
