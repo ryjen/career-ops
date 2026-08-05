@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 import fs from 'node:fs/promises';
 import process from 'node:process';
-import { runSmoke } from './index.js';
+import { normalizeOpportunity, runSmoke } from './index.js';
 
 function usage() {
-  return 'Usage: career-ops smoke [--input PATH|-] [--output PATH|-]';
+  return 'Usage: career-ops <smoke|normalize-opportunity> [--input PATH|-] [--output PATH|-]';
 }
 
 function parseArgs(argv) {
-  if (argv[0] !== 'smoke') throw new Error(usage());
-  const options = { input: '-', output: '-' };
+  const command = argv[0];
+  if (!['smoke', 'normalize-opportunity'].includes(command)) throw new Error(usage());
+  const options = { command, input: '-', output: '-' };
   for (let index = 1; index < argv.length; index += 1) {
     const argument = argv[index];
     if (argument === '--input' || argument === '--output') {
@@ -41,13 +42,31 @@ async function writeOutput(destination, text) {
   await fs.writeFile(destination, text, { flag: 'wx' });
 }
 
+function exitCode(error) {
+  if (error.code === 'ERR_CONTRACT_VALIDATION') return 2;
+  if (error.code === 'ERR_CONTRACT_VERSION') return 3;
+  if (error.code === 'ERR_INPUT_BOUNDS') return 4;
+  return 1;
+}
+
 try {
   const options = parseArgs(process.argv.slice(2));
   const raw = await readInput(options.input);
-  if (Buffer.byteLength(raw, 'utf8') > 16_384) throw new Error('input exceeds the 16384-byte bootstrap limit');
-  const result = runSmoke(JSON.parse(raw));
+  const maximumBytes = options.command === 'smoke' ? 16_384 : 262_144;
+  if (Buffer.byteLength(raw, 'utf8') > maximumBytes) {
+    const error = new RangeError(`input exceeds the ${maximumBytes}-byte CLI limit`);
+    error.code = 'ERR_INPUT_BOUNDS';
+    throw error;
+  }
+  const parsed = JSON.parse(raw);
+  const result = options.command === 'smoke' ? runSmoke(parsed) : normalizeOpportunity(parsed);
   await writeOutput(options.output, `${JSON.stringify(result, null, 2)}\n`);
 } catch (error) {
-  process.stderr.write(`${error.message}\n`);
-  process.exitCode = error.code === 'ERR_CONTRACT_VALIDATION' ? 2 : 1;
+  process.stderr.write(`${JSON.stringify({
+    contract_name: 'career-ops.error',
+    contract_version: 1,
+    code: error.code || 'ERR_EXECUTION',
+    message: error.message,
+  })}\n`);
+  process.exitCode = exitCode(error);
 }

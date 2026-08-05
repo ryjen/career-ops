@@ -4,7 +4,9 @@ CareerOps is a deterministic, evidence-driven framework for career operations. I
 
 ## Project status
 
-The repository is establishing its public architecture and trust boundaries. The bootstrap package contains a synthetic smoke contract only. Opportunity normalization and validation will be the first supported domain slice.
+The first public domain slice is opportunity normalization and validation. It converts explicit bounded source text into structured observed, normalized, inferred, and unresolved values with deterministic provenance.
+
+The package remains private until the release, namespace, disclosure, and provenance gates are complete.
 
 ## Design principles
 
@@ -17,10 +19,30 @@ The repository is establishing its public architecture and trust boundaries. The
 - independently invented synthetic fixtures only;
 - no provider credentials, private infrastructure, or mutation authority in the public core.
 
-## Bootstrap smoke path
+## Opportunity normalization
 
 ```bash
 mise run setup
+node src/cli.js normalize-opportunity \
+  --input fixtures/synthetic/opportunity-normalization-input.v1.json
+```
+
+The v1 slice provides:
+
+- versioned input and output JSON schemas;
+- matching runtime validators;
+- deterministic text normalization, identity, and content hashing;
+- explicit observation time and taxonomy identity;
+- separated observed, normalized, inferred, and unresolved values;
+- evidence, confidence, rule identity, warnings, and provenance;
+- stable CLI error JSON and exit codes;
+- no URL fetching, provider access, implicit discovery, or mutation.
+
+See [opportunity normalization](docs/opportunity-normalization.md).
+
+## Bootstrap smoke path
+
+```bash
 mise run verify
 printf '%s\n' '{"contract_name":"career-ops.smoke","contract_version":1,"message":"hello"}' \
   | node src/cli.js smoke

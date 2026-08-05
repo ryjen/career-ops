@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://career-ops.dev/schemas/opportunity-normalization-input.v1.schema.json",
+  "title": "Opportunity normalization input v1",
+  "type": "object",
+  "required": ["contract_name", "contract_version", "schema_version", "source", "taxonomy"],
+  "properties": {
+    "contract_name": { "const": "career-ops.opportunity-normalization" },
+    "contract_version": { "const": 1 },
+    "schema_version": { "const": 1 },
+    "source": {
+      "type": "object",
+      "required": ["source_type", "observed_at", "text"],
+      "properties": {
+        "source_type": { "enum": ["manual", "job-board", "referral", "agency", "other"] },
+        "source_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "observed_at": { "type": "string", "format": "date-time" },
+        "canonical_url": { "type": "string", "format": "uri", "maxLength": 2048 },
+        "text": { "type": "string", "minLength": 1, "maxLength": 131072 }
+      },
+      "additionalProperties": false
+    },
+    "hints": {
+      "type": "object",
+      "properties": {
+        "company": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 }
+      },
+      "additionalProperties": false
+    },
+    "taxonomy": {
+      "type": "object",
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "const": "career-ops.opportunity-taxonomy" },
+        "version": { "const": 1 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
