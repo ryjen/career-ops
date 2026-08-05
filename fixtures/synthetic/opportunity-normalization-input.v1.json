@@ -1,0 +1,20 @@
+{
+  "contract_name": "career-ops.opportunity-normalization",
+  "contract_version": 1,
+  "schema_version": 1,
+  "source": {
+    "source_type": "job-board",
+    "source_id": "synthetic-northstar-platform-42",
+    "observed_at": "2026-02-03T04:05:06.000Z",
+    "canonical_url": "https://jobs.example.test/northstar/platform-42",
+    "text": "Company: Northstar Systems\nTitle: Senior Platform Engineer\nLocation: Remote within Canada\nCompensation: CAD 145,000 - 175,000 annual\n\n- Design reliable internal platform services and APIs\n- Build cloud automation and observability tooling\n- Lead security reviews and test automation"
+  },
+  "hints": {
+    "company": "Northstar Systems",
+    "title": "Senior Platform Engineer"
+  },
+  "taxonomy": {
+    "id": "career-ops.opportunity-taxonomy",
+    "version": 1
+  }
+}
