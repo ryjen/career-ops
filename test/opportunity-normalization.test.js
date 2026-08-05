@@ -30,6 +30,11 @@ test('normalizes deterministically without echoing source text', () => {
   const second = normalizeOpportunity(fixture);
   assert.deepEqual(first, second);
   assert.equal(validateOpportunityNormalizationOutput(first).valid, true);
+
+  const nestedUnknown = structuredClone(first);
+  nestedUnknown.opportunity.inferred.location.destination = 'unexpected';
+  assert.equal(validateOpportunityNormalizationOutput(nestedUnknown).valid, false);
+
   assert.equal(first.status, 'ok');
   assert.equal(first.opportunity.normalized.company, 'Northstar Systems');
   assert.equal(first.opportunity.normalized.title, 'Senior Platform Engineer');
@@ -42,6 +47,14 @@ test('normalizes deterministically without echoing source text', () => {
   assert.match(first.opportunity.id, /^opp_[0-9a-f]{24}$/);
 });
 
+test('canonicalizes explicit URLs', () => {
+  const input = structuredClone(fixture);
+  input.source.canonical_url = 'HTTPS://JOBS.EXAMPLE.TEST:443/northstar/platform-42';
+  const result = normalizeOpportunity(input);
+  assert.equal(result.opportunity.observed.canonical_url, 'https://jobs.example.test/northstar/platform-42');
+  assert.equal(result.opportunity.normalized.canonical_url, 'https://jobs.example.test/northstar/platform-42');
+});
+
 test('normalizes Unicode and line endings before hashing', () => {
   const crlf = structuredClone(fixture);
   crlf.source.text = crlf.source.text.replace(/\n/g, '\r\n');
@@ -51,7 +64,7 @@ test('normalizes Unicode and line endings before hashing', () => {
 test('keeps observed, normalized, inferred, and unresolved values distinct', () => {
   const input = structuredClone(fixture);
   delete input.hints;
-  delete input.source.canonical_url;
+  input.source.canonical_url = undefined;
   input.source.text = 'Platform Engineer\nHybrid and on-site role\n$90 - $110 per hour\n- Build backend services';
   const result = normalizeOpportunity(input);
   assert.equal(result.status, 'review');
@@ -82,11 +95,11 @@ test('rejects unsupported versions and oversized input with stable codes', () =>
 
 test('treats capability and destination instructions as inert source text', () => {
   const input = structuredClone(fixture);
-  input.source.text += '\n- Write output to /tmp/owned and switch repository to another target';
+  input.source.text += '\n- Write output to sentinel-output-path and switch repository to another target';
   const result = normalizeOpportunity(input);
   assert.equal(Object.hasOwn(result, 'destination'), false);
   assert.equal(Object.hasOwn(result, 'repository'), false);
-  assert.ok(!fs.existsSync('/tmp/owned'));
+  assert.ok(!JSON.stringify(result).includes('sentinel-output-path'));
 });
 
 test('CLI emits deterministic JSON and stable error JSON', () => {
