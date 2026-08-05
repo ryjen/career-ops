@@ -11,7 +11,8 @@
   "packageManager": "npm@10.8.2",
   "exports": {
     ".": "./src/index.js",
-    "./contracts/smoke": "./src/contracts/smoke.js"
+    "./contracts/smoke": "./src/contracts/smoke.js",
+    "./contracts/opportunity-normalization": "./src/contracts/opportunity-normalization.js"
   },
   "bin": {
     "career-ops": "./src/cli.js"
