@@ -33,8 +33,9 @@
     "human_review": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["reviewer", "reviewed_at", "surfaces"],
+      "required": ["source_commit", "reviewer", "reviewed_at", "surfaces"],
       "properties": {
+        "source_commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
         "reviewer": { "type": "string", "minLength": 1, "maxLength": 120 },
         "reviewed_at": { "type": "string", "format": "date" },
         "surfaces": {
