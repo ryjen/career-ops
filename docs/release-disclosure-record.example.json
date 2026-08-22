@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "release": {
+    "source_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "package_name": "@ryjen/career-ops",
+    "package_version": "0.1.0-example",
+    "archive_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "automated_scan": {
+    "command": "npm run disclosure:scan",
+    "status": "pass",
+    "unresolved_findings": 0,
+    "fixture_count": 2,
+    "reviewed_fixture_count": 2
+  },
+  "human_review": {
+    "reviewer": "maintainer",
+    "reviewed_at": "2026-08-21",
+    "surfaces": [
+      { "id": "collaboration-history", "status": "reviewed", "notes": "Example review disposition only." },
+      { "id": "attachments-and-discussions", "status": "reviewed", "notes": "Example review disposition only." },
+      { "id": "actions-logs-and-summaries", "status": "reviewed", "notes": "Example review disposition only." },
+      { "id": "actions-artifacts-and-caches", "status": "reviewed", "notes": "Example review disposition only." },
+      { "id": "environments-and-workflow-metadata", "status": "reviewed", "notes": "Example review disposition only." },
+      { "id": "tags-releases-and-packages", "status": "reviewed", "notes": "Example review disposition only." },
+      { "id": "sbom-provenance-and-attestations", "status": "reviewed", "notes": "Example review disposition only." },
+      { "id": "dependency-license-and-mpl", "status": "reviewed", "notes": "Example review disposition only." },
+      { "id": "generated-docs-and-source-maps", "status": "reviewed", "notes": "Example review disposition only." },
+      { "id": "synthetic-reidentification", "status": "reviewed", "notes": "Example review disposition only." },
+      { "id": "package-archive-contents", "status": "reviewed", "notes": "Example review disposition only." }
+    ]
+  },
+  "exceptions": [],
+  "decision": {
+    "status": "block",
+    "rationale": "Example template only; replace all evidence with an exact reviewed release candidate before approval."
+  }
+}
