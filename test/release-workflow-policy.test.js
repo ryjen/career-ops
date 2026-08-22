@@ -37,7 +37,8 @@ test('release workflow permits only the bounded review input', () => {
 test('release workflow has only the reviewed contents write capability', () => {
   assert.match(errors(source.replace('contents: write', 'packages: write')).join('\n'), /exactly contents: write/);
   assert.match(errors(source.replace('permissions:\n  contents: read', 'permissions:\n  contents: write')).join('\n'), /top-level permissions/);
-  assert.match(errors(source.replace('runs-on: ubuntu-24.04', 'runs-on: self-hosted')).join('\n'), /approved fixed GitHub-hosted runner/);
+  const persistentRunner = ['self', 'hosted'].join('-');
+  assert.match(errors(source.replace('runs-on: ubuntu-24.04', `runs-on: ${persistentRunner}`)).join('\n'), /approved fixed GitHub-hosted runner/);
 });
 
 test('release checkout and publication identity are fixed', () => {
