@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const roots = ['src', 'schemas', 'fixtures', 'test', 'scripts', 'docs', '.github'];
+const roots = ['src', 'schemas', 'fixtures', 'release', 'test', 'scripts', 'docs', '.github'];
 const rootFiles = [
   '.gitignore', '.nvmrc', 'README.md', 'SECURITY.md', 'SUPPORT.md',
   'CONTRIBUTING.md', 'GOVERNANCE.md', 'CODE_OF_CONDUCT.md',

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "package_name": "@ryjen/career-ops",
+  "release_version": "0.1.0",
+  "supported_domains": [
+    "career-ops.opportunity-normalization@1"
+  ],
+  "diagnostic_contracts": [
+    "career-ops.smoke@1"
+  ],
+  "distribution_state": "candidate-only",
+  "publication_issue": 18
+}
