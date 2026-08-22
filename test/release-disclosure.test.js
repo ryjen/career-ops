@@ -23,6 +23,7 @@ function validRecord() {
       reviewed_fixture_count: 2,
     },
     human_review: {
+      source_commit: 'a'.repeat(40),
       reviewer: 'maintainer',
       reviewed_at: '2026-08-21',
       surfaces: REQUIRED_SURFACES.map((id) => ({ id, status: 'reviewed', notes: 'Reviewed against the exact candidate.' })),
@@ -37,6 +38,14 @@ function validRecord() {
 
 test('accepts a complete approved release disclosure record', () => {
   assert.deepEqual(validateReleaseDisclosure(validRecord()), { valid: true, errors: [] });
+});
+
+test('requires human review to bind to the release source commit', () => {
+  const record = validRecord();
+  record.human_review.source_commit = 'c'.repeat(40);
+  const result = validateReleaseDisclosure(record);
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join('\n'), /must match release source_commit/);
 });
 
 test('fails when automated disclosure has unresolved findings', () => {
@@ -104,4 +113,5 @@ test('binds approval to the exact commit, package, version, and archive digest',
   });
   assert.equal(mismatch.valid, false);
   assert.match(mismatch.errors.join('\n'), /checked-out candidate/);
+  assert.match(mismatch.errors.join('\n'), /human_review source_commit/);
 });
