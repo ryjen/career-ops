@@ -50,15 +50,14 @@ export function decodeReview(encoded) {
   if (typeof encoded !== 'string' || encoded.length < 4 || encoded.length > MAX_REVIEW_BYTES * 2) {
     throw new Error('release review input is missing or exceeds the bounded size');
   }
-  let text;
-  try {
-    text = Buffer.from(encoded, 'base64').toString('utf8');
-  } catch {
-    throw new Error('release review input is not valid base64');
+  if (!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded)) {
+    throw new Error('release review input is not canonical base64');
   }
-  if (Buffer.byteLength(text, 'utf8') > MAX_REVIEW_BYTES) throw new Error('decoded release review exceeds the bounded size');
+  const buffer = Buffer.from(encoded, 'base64');
+  if (buffer.toString('base64') !== encoded) throw new Error('release review input is not canonical base64');
+  if (buffer.byteLength > MAX_REVIEW_BYTES) throw new Error('decoded release review exceeds the bounded size');
   try {
-    return JSON.parse(text);
+    return JSON.parse(buffer.toString('utf8'));
   } catch {
     throw new Error('decoded release review is not valid JSON');
   }
