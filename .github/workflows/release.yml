@@ -51,10 +51,7 @@ jobs:
         run: npm run release:disclosure:assemble
 
       - name: Validate exact candidate disclosure record
-        run: >-
-          npm run release:disclosure:validate --
-          .release-candidate/release-disclosure.json
-          --archive .release-candidate/ryjen-career-ops-0.1.0.tgz
+        run: npm run release:disclosure:validate -- .release-candidate/release-disclosure.json --archive .release-candidate/ryjen-career-ops-0.1.0.tgz
 
       - name: Refuse an existing v0.1.0 publication
         env:
