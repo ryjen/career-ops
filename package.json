@@ -32,9 +32,10 @@
     "workflow:validate": "node scripts/check-workflows.mjs",
     "dependency:validate": "node --test test/dependency-diff.test.js",
     "schema:validate": "node scripts/validate-schemas.mjs",
+    "disclosure:scan": "node scripts/disclosure-scan.mjs",
     "test": "node --test",
     "build": "node scripts/build.mjs",
     "pack:check": "npm pack --dry-run --ignore-scripts",
-    "verify": "npm run format:check && npm run lint && npm run workflow:validate && npm run dependency:validate && npm run schema:validate && npm test && npm run build && npm run pack:check"
+    "verify": "npm run format:check && npm run lint && npm run workflow:validate && npm run dependency:validate && npm run schema:validate && npm run disclosure:scan && npm test && npm run build && npm run pack:check"
   }
 }
