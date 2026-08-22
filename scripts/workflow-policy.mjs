@@ -15,10 +15,24 @@ const LIFECYCLE_SCRIPTS = new Set([
 ]);
 const DANGEROUS_RUN_CONTEXT = /\$\{\{[^}]*github\.event\.(?:issue|discussion|comment|review|pull_request)\.(?:body|title)[^}]*\}\}/i;
 const RELEASE_COMMAND = /(?:^|\s)(?:npm\s+publish|pnpm\s+publish|yarn\s+npm\s+publish|gh\s+release|docker\s+push)(?:\s|$)/m;
+const UNSUPPORTED_PUBLICATION = /(?:^|\s)(?:npm\s+publish|pnpm\s+publish|yarn\s+npm\s+publish|docker\s+push)(?:\s|$)/m;
 const AUTO_MERGE_COMMAND = /(?:gh\s+pr\s+merge|enablePullRequestAutoMerge)/i;
 const DEPENDENCY_REVIEW_USE = 'actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294';
 const DEPENDENCY_FALLBACK_RUN = /\bnode\s+scripts\/dependency-diff\.mjs\s+--base\s+["']origin\/\$\{BASE_REF\}["']/;
 const DEPENDENCY_FALLBACK_IF = /steps\.dependency-review\.outcome\s*==\s*["']failure["']/;
+const RELEASE_WORKFLOW = '.github/workflows/release.yml';
+const RELEASE_TAG = 'v0.1.0';
+const RELEASE_REVIEW_INPUT = '${{ inputs.release_review_base64 }}';
+const RELEASE_ASSETS = [
+  '.release-candidate/ryjen-career-ops-0.1.0.tgz',
+  '.release-candidate/SHA256SUMS',
+  '.release-candidate/archive-inventory.json',
+  '.release-candidate/sbom.cdx.json',
+  '.release-candidate/licenses.json',
+  '.release-candidate/provenance.json',
+  '.release-candidate/disclosure-scan.json',
+  '.release-candidate/release-disclosure.json',
+];
 
 function eventNames(on) {
   if (typeof on === 'string') return [on];
@@ -27,7 +41,7 @@ function eventNames(on) {
   return [];
 }
 
-function permissionErrors(permissions, label) {
+function permissionErrors(permissions, label, allowedWrites = new Set()) {
   const errors = [];
   if (permissions === undefined) return [`${label}: explicit permissions are required`];
   if (permissions === 'read-all' || permissions === 'none') return errors;
@@ -35,6 +49,7 @@ function permissionErrors(permissions, label) {
     return [`${label}: permissions must be a mapping, read-all, or none`];
   }
   for (const [scope, value] of Object.entries(permissions)) {
+    if (value === 'write' && allowedWrites.has(scope)) continue;
     if (!['read', 'none'].includes(value)) errors.push(`${label}: ${scope} permission must be read or none, received ${value}`);
   }
   return errors;
@@ -130,7 +145,89 @@ function continueOnErrorErrors(job, label) {
   return errors;
 }
 
+function normalizedShell(command) {
+  return command.replace(/\\\s*\n\s*/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function manualReleaseErrors(workflow, events, filename) {
+  const errors = [];
+  if (events.length !== 1 || events[0] !== 'workflow_dispatch') {
+    errors.push(`${filename}: public release workflow must be workflow_dispatch only`);
+  }
+  const dispatch = workflow.on?.workflow_dispatch;
+  const inputs = dispatch && typeof dispatch === 'object' && !Array.isArray(dispatch) ? dispatch.inputs : undefined;
+  const inputNames = inputs && typeof inputs === 'object' && !Array.isArray(inputs) ? Object.keys(inputs).sort() : [];
+  if (JSON.stringify(inputNames) !== JSON.stringify(['release_review_base64'])) {
+    errors.push(`${filename}: release_review_base64 must be the only workflow input`);
+  } else {
+    const input = inputs.release_review_base64;
+    if (input?.required !== true || input?.type !== 'string' || input?.default !== undefined) {
+      errors.push(`${filename}: release_review_base64 must be a required string with no default`);
+    }
+  }
+  if (containsSecretReference(workflow)) errors.push(`${filename}: release workflow cannot reference repository or environment secrets`);
+  if (JSON.stringify(workflow).match(/\$\{\{\s*inputs\.(?!release_review_base64\b)/)) {
+    errors.push(`${filename}: release workflow cannot consume any input except release_review_base64`);
+  }
+  if (Object.keys(workflow.jobs || {}).length !== 1 || !workflow.jobs?.release) {
+    errors.push(`${filename}: release workflow must contain exactly one release job`);
+    return errors;
+  }
+  const job = workflow.jobs.release;
+  if (job.if !== "github.ref == 'refs/heads/main'") errors.push(`${filename}: release job must be guarded to refs/heads/main`);
+  if (job.environment !== undefined) errors.push(`${filename}: release job cannot depend on an environment or environment secrets`);
+  const permissionKeys = job.permissions && typeof job.permissions === 'object' && !Array.isArray(job.permissions)
+    ? Object.keys(job.permissions).sort()
+    : [];
+  if (JSON.stringify(permissionKeys) !== JSON.stringify(['contents']) || job.permissions?.contents !== 'write') {
+    errors.push(`${filename}: release job must have exactly contents: write permission`);
+  }
+  const steps = Array.isArray(job.steps) ? job.steps : [];
+  const checkouts = steps.filter((step) => typeof step?.uses === 'string' && step.uses.startsWith('actions/checkout@'));
+  if (checkouts.length !== 1) errors.push(`${filename}: release workflow must contain exactly one checkout step`);
+  for (const checkout of checkouts) {
+    if (checkout.with?.ref !== 'main') errors.push(`${filename}: release checkout must use fixed ref main`);
+    if (checkout.with?.['fetch-depth'] !== 0) errors.push(`${filename}: release checkout must fetch complete history`);
+    if (checkout.with?.['persist-credentials'] !== false) errors.push(`${filename}: release checkout must disable persisted credentials`);
+  }
+  const reviewSteps = steps.filter((step) => step?.env?.RELEASE_REVIEW_B64 !== undefined);
+  if (reviewSteps.length !== 1 || reviewSteps[0]?.env?.RELEASE_REVIEW_B64 !== RELEASE_REVIEW_INPUT) {
+    errors.push(`${filename}: bounded review input must flow only through RELEASE_REVIEW_B64`);
+  }
+  for (const step of steps) {
+    if (typeof step?.run === 'string' && /\$\{\{\s*inputs\./.test(step.run)) {
+      errors.push(`${filename}: workflow inputs cannot be interpolated into shell commands`);
+    }
+  }
+
+  const commands = collectValues(job, 'run').filter((value) => typeof value === 'string');
+  if (commands.some((command) => UNSUPPORTED_PUBLICATION.test(command))) {
+    errors.push(`${filename}: npm/container publication is prohibited for v0.1.0`);
+  }
+  const create = commands.find((command) => /\bgh\s+release\s+create\b/.test(command));
+  if (!create) {
+    errors.push(`${filename}: release workflow must create the fixed GitHub Release`);
+  } else {
+    const normalized = normalizedShell(create);
+    if (!/\bgh release create v0\.1\.0\b/.test(normalized)) errors.push(`${filename}: release creation must use fixed tag ${RELEASE_TAG}`);
+    if (!normalized.includes('--target "$GITHUB_SHA"')) errors.push(`${filename}: release creation must target the validated GITHUB_SHA`);
+    if (!normalized.includes("--title 'CareerOps v0.1.0'")) errors.push(`${filename}: release title must be fixed`);
+    if (!normalized.includes('--notes-file release/v0.1.0.md')) errors.push(`${filename}: release notes file must be fixed`);
+    for (const asset of RELEASE_ASSETS) if (!normalized.includes(asset)) errors.push(`${filename}: release creation is missing fixed asset ${asset}`);
+    if (/[*?\[]/.test(normalized.split('gh release create v0.1.0')[1] ?? '')) errors.push(`${filename}: release creation cannot use globbed asset paths`);
+  }
+  for (const command of commands) {
+    const normalized = normalizedShell(command);
+    for (const match of normalized.matchAll(/\bgh release (?:create|view|download)\s+([^\s]+)/g)) {
+      if (match[1] !== RELEASE_TAG) errors.push(`${filename}: every GitHub Release command must use fixed tag ${RELEASE_TAG}`);
+    }
+    if (/\bgh release (?:delete|edit|upload)\b/.test(normalized)) errors.push(`${filename}: mutable post-creation release commands are prohibited`);
+  }
+  return errors;
+}
+
 function releaseErrors(workflow, events, filename) {
+  if (filename === RELEASE_WORKFLOW) return manualReleaseErrors(workflow, events, filename);
   const commands = collectValues(workflow, 'run').filter((value) => typeof value === 'string');
   if (!commands.some((command) => RELEASE_COMMAND.test(command))) return [];
   const errors = [];
@@ -150,15 +247,29 @@ export function validateWorkflow(workflow, filename = '<workflow>', options = {}
   const errors = [];
   const events = eventNames(workflow.on);
   const pullRequest = events.includes('pull_request') || events.includes('pull_request_target');
+  const manualRelease = filename === RELEASE_WORKFLOW;
   if (events.length === 0) errors.push(`${filename}: workflow must define an event under on`);
   if (!workflow.concurrency || typeof workflow.concurrency !== 'object' || Array.isArray(workflow.concurrency)) {
     errors.push(`${filename}: workflow concurrency mapping is required`);
   } else {
     if (typeof workflow.concurrency.group !== 'string' || !workflow.concurrency.group.trim()) errors.push(`${filename}: concurrency group is required`);
-    if (workflow.concurrency['cancel-in-progress'] !== true) errors.push(`${filename}: concurrency cancel-in-progress must be true`);
+    if (manualRelease) {
+      if (workflow.concurrency.group !== 'release-v0.1.0') errors.push(`${filename}: release concurrency group must be release-v0.1.0`);
+      if (workflow.concurrency['cancel-in-progress'] !== false) errors.push(`${filename}: release publication must not be cancelled in progress`);
+    } else if (workflow.concurrency['cancel-in-progress'] !== true) {
+      errors.push(`${filename}: concurrency cancel-in-progress must be true`);
+    }
   }
   if (events.includes('pull_request_target')) errors.push(`${filename}: pull_request_target is prohibited`);
   errors.push(...permissionErrors(workflow.permissions, `${filename}: workflow`));
+  if (manualRelease) {
+    const workflowPermissionKeys = workflow.permissions && typeof workflow.permissions === 'object' && !Array.isArray(workflow.permissions)
+      ? Object.keys(workflow.permissions).sort()
+      : [];
+    if (JSON.stringify(workflowPermissionKeys) !== JSON.stringify(['contents']) || workflow.permissions?.contents !== 'read') {
+      errors.push(`${filename}: release workflow top-level permissions must be exactly contents: read`);
+    }
+  }
   if (!workflow.jobs || typeof workflow.jobs !== 'object' || Array.isArray(workflow.jobs) || Object.keys(workflow.jobs).length === 0) {
     errors.push(`${filename}: jobs must be a non-empty mapping`);
     return errors;
@@ -181,7 +292,10 @@ export function validateWorkflow(workflow, filename = '<workflow>', options = {}
         errors.push(`${label}: runs-on must be an approved fixed GitHub-hosted runner`);
       }
     }
-    if (job.permissions !== undefined) errors.push(...permissionErrors(job.permissions, label));
+    if (job.permissions !== undefined) {
+      const allowedWrites = manualRelease && jobName === 'release' ? new Set(['contents']) : new Set();
+      errors.push(...permissionErrors(job.permissions, label, allowedWrites));
+    }
     if (pullRequest && job.environment !== undefined) errors.push(`${label}: pull-request jobs cannot use environments`);
     if (job.container?.image && !DOCKER_USE.test(`docker://${job.container.image}`)) {
       errors.push(`${label}: container images must use an immutable sha256 digest`);
