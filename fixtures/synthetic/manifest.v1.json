@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "fixtures": [
+    {
+      "id": "opportunity-normalization-input-v1",
+      "path": "fixtures/synthetic/opportunity-normalization-input.v1.json",
+      "origin": "independently-invented",
+      "purpose": "Exercise the v1 opportunity-normalization contract with an invented Canadian platform role.",
+      "review": {
+        "status": "reviewed",
+        "reviewed_at": "2026-08-21"
+      }
+    },
+    {
+      "id": "smoke-input",
+      "path": "fixtures/synthetic/smoke-input.json",
+      "origin": "independently-invented",
+      "purpose": "Exercise the public smoke contract with a minimal invented message payload.",
+      "review": {
+        "status": "reviewed",
+        "reviewed_at": "2026-08-21"
+      }
+    }
+  ]
+}
