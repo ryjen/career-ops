@@ -30,6 +30,9 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Bind checkout to dispatch commit
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+
       - name: Set up exact Node toolchain
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
