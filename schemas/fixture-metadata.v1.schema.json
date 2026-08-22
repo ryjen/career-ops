@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ryjen.github.io/career-ops/schemas/fixture-metadata.v1.schema.json",
+  "title": "CareerOps synthetic fixture metadata manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "fixtures"],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "path", "origin", "purpose", "review"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^fixtures/synthetic/[A-Za-z0-9._/-]+$"
+          },
+          "origin": {
+            "const": "independently-invented"
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 240
+          },
+          "review": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["status", "reviewed_at"],
+            "properties": {
+              "status": {
+                "const": "reviewed"
+              },
+              "reviewed_at": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
