@@ -1,0 +1,100 @@
+name: Release v0.1.0
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_review_base64:
+        description: Base64-encoded bounded human disclosure review for the exact main commit
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-v0.1.0
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - name: Check out exact main source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind checkout to dispatch commit
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+
+      - name: Set up exact Node toolchain
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build exact unpublished candidate
+        run: npm run release:candidate
+
+      - name: Assemble bounded human disclosure review
+        env:
+          RELEASE_REVIEW_B64: ${{ inputs.release_review_base64 }}
+        run: npm run release:disclosure:assemble
+
+      - name: Validate exact candidate disclosure record
+        run: npm run release:disclosure:validate -- .release-candidate/release-disclosure.json --archive .release-candidate/ryjen-career-ops-0.1.0.tgz
+
+      - name: Refuse an existing v0.1.0 publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view v0.1.0 >/dev/null 2>&1; then
+            echo 'v0.1.0 release already exists' >&2
+            exit 1
+          fi
+          if git ls-remote --exit-code --tags origin refs/tags/v0.1.0 >/dev/null 2>&1; then
+            echo 'v0.1.0 tag already exists' >&2
+            exit 1
+          fi
+
+      - name: Publish fixed GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.1.0 \
+            .release-candidate/ryjen-career-ops-0.1.0.tgz \
+            .release-candidate/SHA256SUMS \
+            .release-candidate/archive-inventory.json \
+            .release-candidate/sbom.cdx.json \
+            .release-candidate/licenses.json \
+            .release-candidate/provenance.json \
+            .release-candidate/disclosure-scan.json \
+            .release-candidate/release-disclosure.json \
+            --target "$GITHUB_SHA" \
+            --title 'CareerOps v0.1.0' \
+            --notes-file release/v0.1.0.md
+
+      - name: Verify published release metadata and bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          release_dir="$RUNNER_TEMP/career-ops-v0.1.0"
+          mkdir -p "$release_dir"
+          gh release view v0.1.0 --json tagName,isDraft,isPrerelease,assets > "$release_dir/release.json"
+          node scripts/verify-github-release-metadata.mjs "$release_dir/release.json"
+          gh release download v0.1.0 \
+            --dir "$release_dir" \
+            --pattern 'ryjen-career-ops-0.1.0.tgz' \
+            --pattern 'SHA256SUMS'
+          node scripts/verify-release-download.mjs "$release_dir"
+          git fetch origin tag v0.1.0 --no-tags
+          test "$(git rev-list -n 1 v0.1.0)" = "$GITHUB_SHA"
