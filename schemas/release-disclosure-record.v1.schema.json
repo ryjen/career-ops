@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ryjen.github.io/career-ops/schemas/release-disclosure-record.v1.schema.json",
+  "title": "CareerOps release disclosure record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "release", "automated_scan", "human_review", "exceptions", "decision"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_commit", "package_name", "package_version", "archive_sha256"],
+      "properties": {
+        "source_commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+        "package_name": { "const": "@ryjen/career-ops" },
+        "package_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "archive_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "automated_scan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command", "status", "unresolved_findings", "fixture_count", "reviewed_fixture_count"],
+      "properties": {
+        "command": { "const": "npm run disclosure:scan" },
+        "status": { "const": "pass" },
+        "unresolved_findings": { "const": 0 },
+        "fixture_count": { "type": "integer", "minimum": 1 },
+        "reviewed_fixture_count": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "human_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewer", "reviewed_at", "surfaces"],
+      "properties": {
+        "reviewer": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "reviewed_at": { "type": "string", "format": "date" },
+        "surfaces": {
+          "type": "array",
+          "minItems": 11,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "status", "notes"],
+            "properties": {
+              "id": { "type": "string", "minLength": 3, "maxLength": 80 },
+              "status": { "enum": ["reviewed", "not-applicable"] },
+              "notes": { "type": "string", "minLength": 8, "maxLength": 500 }
+            }
+          }
+        }
+      }
+    },
+    "exceptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "status": { "const": "reviewed" }
+        }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "rationale"],
+      "properties": {
+        "status": { "enum": ["approve", "block"] },
+        "rationale": { "type": "string", "minLength": 12, "maxLength": 500 }
+      }
+    }
+  }
+}
