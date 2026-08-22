@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { REQUIRED_SURFACES, validateReleaseDisclosure } from '../scripts/validate-release-disclosure.mjs';
+import {
+  REQUIRED_SURFACES,
+  validateCandidateIdentity,
+  validateReleaseDisclosure,
+} from '../scripts/validate-release-disclosure.mjs';
 
 function validRecord() {
   return {
@@ -51,6 +55,14 @@ test('fails when a required human review surface is missing', () => {
   assert.match(result.errors.join('\n'), /missing human_review surface/);
 });
 
+test('fails when a core review surface is marked not applicable', () => {
+  const record = validRecord();
+  record.human_review.surfaces.find((surface) => surface.id === 'package-archive-contents').status = 'not-applicable';
+  const result = validateReleaseDisclosure(record);
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join('\n'), /package-archive-contents must be reviewed/);
+});
+
 test('fails when a disclosure exception is not reviewed', () => {
   const record = validRecord();
   record.exceptions = [{ id: 'EX-1', status: 'pending' }];
@@ -73,4 +85,23 @@ test('rejects unknown fields that could carry unbounded audit material', () => {
   const result = validateReleaseDisclosure(record);
   assert.equal(result.valid, false);
   assert.match(result.errors.join('\n'), /unknown field/);
+});
+
+test('binds approval to the exact commit, package, version, and archive digest', () => {
+  const record = validRecord();
+  assert.deepEqual(validateCandidateIdentity(record, {
+    source_commit: record.release.source_commit,
+    package_name: record.release.package_name,
+    package_version: record.release.package_version,
+    archive_sha256: record.release.archive_sha256,
+  }), { valid: true, errors: [] });
+
+  const mismatch = validateCandidateIdentity(record, {
+    source_commit: 'c'.repeat(40),
+    package_name: record.release.package_name,
+    package_version: record.release.package_version,
+    archive_sha256: record.release.archive_sha256,
+  });
+  assert.equal(mismatch.valid, false);
+  assert.match(mismatch.errors.join('\n'), /checked-out candidate/);
 });
