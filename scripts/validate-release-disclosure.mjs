@@ -37,6 +37,9 @@ export function validateReleaseDisclosure(record) {
   validateHumanReview(record.human_review, errors);
   validateExceptions(record.exceptions, errors);
   validateDecision(record.decision, errors);
+  if (record.release?.source_commit && record.human_review?.source_commit && record.release.source_commit !== record.human_review.source_commit) {
+    errors.push('human_review source_commit must match release source_commit');
+  }
   return { valid: errors.length === 0, errors: errors.sort() };
 }
 
@@ -44,8 +47,9 @@ export function validateCandidateIdentity(record, candidate) {
   const errors = [];
   if (!object(record?.release)) return { valid: false, errors: ['record release identity is missing'] };
   if (record.release.source_commit !== candidate.source_commit) errors.push('release source_commit does not match the checked-out candidate');
-  if (record.release.package_name !== candidate.package_name) errors.push('release package_name does not match package.json');
-  if (record.release.package_version !== candidate.package_version) errors.push('release package_version does not match package.json');
+  if (record.human_review?.source_commit !== candidate.source_commit) errors.push('human_review source_commit does not match the checked-out candidate');
+  if (record.release.package_name !== candidate.package_name) errors.push('release package_name does not match the release plan');
+  if (record.release.package_version !== candidate.package_version) errors.push('release package_version does not match the release plan');
   if (record.release.archive_sha256 !== candidate.archive_sha256) errors.push('release archive_sha256 does not match the supplied archive');
   return { valid: errors.length === 0, errors: errors.sort() };
 }
@@ -85,7 +89,8 @@ function validateHumanReview(review, errors) {
     errors.push('human_review must be an object');
     return;
   }
-  exactKeys(review, ['reviewer', 'reviewed_at', 'surfaces'], 'human_review', errors);
+  exactKeys(review, ['source_commit', 'reviewer', 'reviewed_at', 'surfaces'], 'human_review', errors);
+  if (!/^[a-f0-9]{40}$/.test(review.source_commit ?? '')) errors.push('human_review source_commit must be a 40-character lowercase hex commit');
   if (typeof review.reviewer !== 'string' || review.reviewer.trim().length < 1 || review.reviewer.length > 120) {
     errors.push('human_review reviewer is invalid');
   }
@@ -186,11 +191,11 @@ function main() {
   try {
     const record = JSON.parse(fs.readFileSync(args.record, 'utf8'));
     const structural = validateReleaseDisclosure(record);
-    const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+    const releasePlan = JSON.parse(fs.readFileSync('release/release-plan.v1.json', 'utf8'));
     const candidate = validateCandidateIdentity(record, {
       source_commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
-      package_name: packageJson.name,
-      package_version: packageJson.version,
+      package_name: releasePlan.package_name,
+      package_version: releasePlan.release_version,
       archive_sha256: sha256File(args.archive),
     });
     const errors = [...structural.errors, ...candidate.errors].sort();
