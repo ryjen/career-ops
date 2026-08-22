@@ -1,4 +1,6 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
 export const REQUIRED_SURFACES = [
@@ -15,6 +17,16 @@ export const REQUIRED_SURFACES = [
   'package-archive-contents',
 ];
 
+export const MUST_REVIEW_SURFACES = new Set([
+  'collaboration-history',
+  'actions-logs-and-summaries',
+  'tags-releases-and-packages',
+  'sbom-provenance-and-attestations',
+  'dependency-license-and-mpl',
+  'synthetic-reidentification',
+  'package-archive-contents',
+]);
+
 export function validateReleaseDisclosure(record) {
   const errors = [];
   if (!object(record)) return { valid: false, errors: ['record must be an object'] };
@@ -25,6 +37,16 @@ export function validateReleaseDisclosure(record) {
   validateHumanReview(record.human_review, errors);
   validateExceptions(record.exceptions, errors);
   validateDecision(record.decision, errors);
+  return { valid: errors.length === 0, errors: errors.sort() };
+}
+
+export function validateCandidateIdentity(record, candidate) {
+  const errors = [];
+  if (!object(record?.release)) return { valid: false, errors: ['record release identity is missing'] };
+  if (record.release.source_commit !== candidate.source_commit) errors.push('release source_commit does not match the checked-out candidate');
+  if (record.release.package_name !== candidate.package_name) errors.push('release package_name does not match package.json');
+  if (record.release.package_version !== candidate.package_version) errors.push('release package_version does not match package.json');
+  if (record.release.archive_sha256 !== candidate.archive_sha256) errors.push('release archive_sha256 does not match the supplied archive');
   return { valid: errors.length === 0, errors: errors.sort() };
 }
 
@@ -83,6 +105,7 @@ function validateHumanReview(review, errors) {
     else if (seen.has(surface.id)) errors.push(`duplicate human_review surface: ${surface.id}`);
     else seen.add(surface.id);
     if (!['reviewed', 'not-applicable'].includes(surface.status)) errors.push(`surface ${surface.id ?? 'unknown'} has invalid status`);
+    if (MUST_REVIEW_SURFACES.has(surface.id) && surface.status !== 'reviewed') errors.push(`surface ${surface.id} must be reviewed`);
     if (typeof surface.notes !== 'string' || surface.notes.length < 8 || surface.notes.length > 500) {
       errors.push(`surface ${surface.id ?? 'unknown'} requires bounded review notes`);
     }
@@ -132,16 +155,46 @@ function object(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
+function sha256File(file) {
+  return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+}
+
+function parseArgs(argv) {
+  const record = argv[0];
+  let archive;
+  for (let index = 1; index < argv.length; index += 1) {
+    if (argv[index] === '--archive') archive = argv[++index];
+    else throw new Error(`unknown argument: ${argv[index]}`);
+  }
+  return { record, archive };
+}
+
 function main() {
-  const file = process.argv[2];
-  if (!file) {
-    process.stderr.write('usage: node scripts/validate-release-disclosure.mjs <record.json>\n');
+  let args;
+  try {
+    args = parseArgs(process.argv.slice(2));
+  } catch (error) {
+    process.stderr.write(`release disclosure validation failed: ${error.message}\n`);
+    process.exitCode = 2;
+    return;
+  }
+  if (!args.record || !args.archive) {
+    process.stderr.write('usage: node scripts/validate-release-disclosure.mjs <record.json> --archive <package.tgz>\n');
     process.exitCode = 2;
     return;
   }
   try {
-    const record = JSON.parse(fs.readFileSync(file, 'utf8'));
-    const result = validateReleaseDisclosure(record);
+    const record = JSON.parse(fs.readFileSync(args.record, 'utf8'));
+    const structural = validateReleaseDisclosure(record);
+    const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+    const candidate = validateCandidateIdentity(record, {
+      source_commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+      package_name: packageJson.name,
+      package_version: packageJson.version,
+      archive_sha256: sha256File(args.archive),
+    });
+    const errors = [...structural.errors, ...candidate.errors].sort();
+    const result = { valid: errors.length === 0, errors };
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
     process.exitCode = result.valid ? 0 : 1;
   } catch (error) {
