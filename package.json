@@ -34,6 +34,7 @@
     "schema:validate": "node scripts/validate-schemas.mjs",
     "disclosure:scan": "node scripts/disclosure-scan.mjs",
     "release:candidate": "node scripts/build-release-candidate.mjs",
+    "release:disclosure:assemble": "node scripts/assemble-release-disclosure.mjs",
     "release:disclosure:validate": "node scripts/validate-release-disclosure.mjs",
     "test": "node --test",
     "build": "node scripts/build.mjs",
