@@ -27,8 +27,10 @@ test('release workflow permits only the bounded review input', () => {
   );
   assert.match(errors(extraInput).join('\n'), /only workflow input/);
 
+  const assembleCommand = 'run: nix develop --no-update-lock-file --command npm run release:disclosure:assemble';
+  assert.ok(source.includes(assembleCommand), 'release workflow must contain the disclosure assembly command');
   const directShell = source.replace(
-    'run: npm run release:disclosure:assemble',
+    assembleCommand,
     'run: echo "${{ inputs.release_review_base64 }}"',
   );
   assert.match(errors(directShell).join('\n'), /cannot be interpolated into shell commands/);

@@ -256,13 +256,30 @@ function requireCleanWorktree() {
   if (status) throw new Error('release candidate requires a clean Git worktree');
 }
 
-function validateToolchain(sourcePackage) {
-  const expectedNode = fs.readFileSync(path.join(ROOT, '.nvmrc'), 'utf8').trim();
-  if (process.version.slice(1) !== expectedNode) throw new Error(`Node version ${process.version.slice(1)} does not match .nvmrc ${expectedNode}`);
-  const expectedNpm = String(sourcePackage.packageManager ?? '').replace(/^npm@/, '');
-  const actualNpm = execFileSync('npm', ['--version'], { encoding: 'utf8' }).trim();
-  if (expectedNpm !== actualNpm) throw new Error(`npm version ${actualNpm} does not match packageManager ${expectedNpm}`);
-  return { node: process.version.slice(1), npm: actualNpm, package_manager: sourcePackage.packageManager };
+export function validateToolchain(flakeLock, environment = process.env) {
+  if (!environment.IN_NIX_SHELL) throw new Error('release candidate must run inside nix develop');
+  const nixpkgs = flakeLock?.nodes?.nixpkgs?.locked;
+  if (!nixpkgs?.rev || !nixpkgs?.narHash) throw new Error('flake.lock must contain a locked nixpkgs revision and narHash');
+
+  const node = process.version.slice(1);
+  const npm = execFileSync('npm', ['--version'], { encoding: 'utf8' }).trim();
+  const nixOutput = execFileSync('nix', ['--version'], { encoding: 'utf8' }).trim();
+  const nix = nixOutput.replace(/^nix \(Nix\)\s+/, '');
+
+  return {
+    source: 'flake.nix+flake.lock',
+    node,
+    npm,
+    nix,
+    nixpkgs: {
+      rev: nixpkgs.rev,
+      nar_hash: nixpkgs.narHash,
+    },
+    definitions: {
+      flake_nix_sha256: sha256File(path.join(ROOT, 'flake.nix')),
+      flake_lock_sha256: sha256File(path.join(ROOT, 'flake.lock')),
+    },
+  };
 }
 
 export function buildReleaseCandidate() {
@@ -271,10 +288,11 @@ export function buildReleaseCandidate() {
 
   const sourcePackage = readJson(path.join(ROOT, 'package.json'));
   const lockfile = readJson(path.join(ROOT, 'package-lock.json'));
+  const flakeLock = readJson(path.join(ROOT, 'flake.lock'));
   const plan = readJson(PLAN);
   const planErrors = validateReleasePlan(plan, sourcePackage);
   if (planErrors.length > 0) throw new Error(planErrors.join('; '));
-  const toolchain = validateToolchain(sourcePackage);
+  const toolchain = validateToolchain(flakeLock);
 
   run('npm', ['run', 'verify'], ROOT, 'repository verification', { inherit: true });
   const disclosure = JSON.parse(run(process.execPath, ['scripts/disclosure-scan.mjs'], ROOT, 'disclosure scan'));

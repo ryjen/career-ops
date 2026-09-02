@@ -16,6 +16,12 @@ Public pull requests are untrusted. Validation runs only on fixed GitHub-hosted 
 
 `scripts/workflow-policy.mjs` parses the workflow YAML into a structured model before applying these rules. Unsupported YAML directives, aliases, anchors, tags, and merge keys fail closed rather than bypassing the policy model.
 
+## Toolchain
+
+The repository flake is the only project toolchain definition. Hosted runners bootstrap a fixed Nix 2.35.2 installer through an immutable action reference; they do not bootstrap Node, npm, Git, GitHub CLI, or `mise` independently.
+
+`flake.lock` pins nixpkgs, and project commands run through `nix develop --no-update-lock-file`. CI evaluates the flake with `nix flake check --no-build --no-update-lock-file` before package verification. This prevents CI from silently changing either the Nix evaluator or project toolchain inputs while preserving the hosted-runner boundary required for untrusted public pull requests.
+
 ## Dependency review
 
 Public pull requests first invoke GitHub's pinned official dependency-review action. Some new repositories do not yet have the GitHub dependency graph enabled. The workflow may tolerate failure from that one exact action only when all of these safeguards are present:
@@ -32,4 +38,4 @@ Any other `continue-on-error` setting is rejected by policy.
 
 ## Dependency updates
 
-Dependabot opens grouped weekly GitHub Actions and npm update pull requests. Updates receive the same CI and dependency-review checks as other pull requests. No workflow has permission or commands to auto-merge them.
+Dependabot opens grouped weekly GitHub Actions and npm update pull requests. Updates receive the same CI and dependency-review checks as other pull requests. `flake.lock` updates are explicit repository changes and receive the same review and CI gates. No workflow has permission or commands to auto-merge them.

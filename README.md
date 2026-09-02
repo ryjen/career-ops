@@ -19,9 +19,22 @@ The package remains private until the release, namespace, disclosure, and proven
 - independently invented synthetic fixtures only;
 - no provider credentials, private infrastructure, or mutation authority in the public core.
 
+## Development toolchain
+
+The repository flake is the canonical development and CI toolchain. `flake.lock` pins the exact nixpkgs revision that supplies Node.js, npm, Git, GitHub CLI, `mise`, and shell utilities used by repository workflows.
+
+```bash
+nix develop
+mise run setup
+mise run verify
+```
+
+CI bootstraps only Nix on the fixed hosted runner, refuses lockfile mutation, and executes project tooling through `nix develop`.
+
 ## Opportunity normalization
 
 ```bash
+nix develop
 mise run setup
 node src/cli.js normalize-opportunity \
   --input fixtures/synthetic/opportunity-normalization-input.v1.json
@@ -43,6 +56,7 @@ See [opportunity normalization](docs/opportunity-normalization.md).
 ## Bootstrap smoke path
 
 ```bash
+nix develop
 mise run verify
 printf '%s\n' '{"contract_name":"career-ops.smoke","contract_version":1,"message":"hello"}' \
   | node src/cli.js smoke
@@ -67,7 +81,8 @@ A package split requires demonstrated independent versioning, dependency, releas
 
 ## Compatibility
 
-- Node.js 20 or newer;
+- Node.js 20 or newer for consumers;
+- the repository development/CI runtime is pinned by `flake.lock`;
 - ESM package exports;
 - CommonJS consumers use dynamic `import()` at their adapter boundary;
 - package semantic versions and contract/schema versions evolve independently when necessary.

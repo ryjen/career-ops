@@ -30,33 +30,38 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Bind checkout to dispatch commit
-        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-
-      - name: Set up exact Node toolchain
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - name: Install Nix
+        uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
         with:
-          node-version-file: .nvmrc
-          cache: npm
+          install_url: https://releases.nixos.org/nix/nix-2.35.2/install
+          extra_nix_config: |
+            experimental-features = nix-command flakes
 
-      - name: Install locked dependencies
-        run: npm ci --ignore-scripts
+      - name: Verify locked toolchain
+        run: nix flake check --no-build --no-update-lock-file
+
+      - name: Bind checkout to dispatch commit
+        run: nix develop --no-update-lock-file --command bash -euo pipefail -c 'test "$(git rev-parse HEAD)" = "$GITHUB_SHA"'
+
+      - name: Install locked package dependencies
+        run: nix develop --no-update-lock-file --command npm ci --ignore-scripts
 
       - name: Build exact unpublished candidate
-        run: npm run release:candidate
+        run: nix develop --no-update-lock-file --command npm run release:candidate
 
       - name: Assemble bounded human disclosure review
         env:
           RELEASE_REVIEW_B64: ${{ inputs.release_review_base64 }}
-        run: npm run release:disclosure:assemble
+        run: nix develop --no-update-lock-file --command npm run release:disclosure:assemble
 
       - name: Validate exact candidate disclosure record
-        run: npm run release:disclosure:validate -- .release-candidate/release-disclosure.json --archive .release-candidate/ryjen-career-ops-0.1.0.tgz
+        run: nix develop --no-update-lock-file --command npm run release:disclosure:validate -- .release-candidate/release-disclosure.json --archive .release-candidate/ryjen-career-ops-0.1.0.tgz
 
       - name: Refuse an existing v0.1.0 publication
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          nix develop --no-update-lock-file --command bash -euo pipefail <<'EOF'
           if gh release view v0.1.0 >/dev/null 2>&1; then
             echo 'v0.1.0 release already exists' >&2
             exit 1
@@ -65,12 +70,13 @@ jobs:
             echo 'v0.1.0 tag already exists' >&2
             exit 1
           fi
+          EOF
 
       - name: Publish fixed GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create v0.1.0 \
+          nix develop --no-update-lock-file --command gh release create v0.1.0 \
             .release-candidate/ryjen-career-ops-0.1.0.tgz \
             .release-candidate/SHA256SUMS \
             .release-candidate/archive-inventory.json \
@@ -87,6 +93,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          nix develop --no-update-lock-file --command bash -euo pipefail <<'EOF'
           release_dir="$RUNNER_TEMP/career-ops-v0.1.0"
           mkdir -p "$release_dir"
           gh release view v0.1.0 --json tagName,isDraft,isPrerelease,assets > "$release_dir/release.json"
@@ -98,3 +105,4 @@ jobs:
           node scripts/verify-release-download.mjs "$release_dir"
           git fetch origin tag v0.1.0 --no-tags
           test "$(git rev-list -n 1 v0.1.0)" = "$GITHUB_SHA"
+          EOF

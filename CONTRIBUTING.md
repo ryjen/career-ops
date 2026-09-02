@@ -9,11 +9,14 @@
 ## Development
 
 ```bash
+nix develop
 mise run setup
 mise run verify
 ```
 
-Use the pinned toolchain and committed lockfile. Do not add install or postinstall lifecycle scripts. New dependencies require a documented need, license review, and supply-chain review.
+`flake.nix` plus `flake.lock` is the canonical toolchain definition. `mise` is a task interface only and must not install its own language runtimes. CI and release workflows may bootstrap Nix on their fixed hosted runner, but project tools and versions come from the locked flake.
+
+Do not add install or postinstall lifecycle scripts. New package or toolchain dependencies require a documented need, license review, supply-chain review, and an update to the appropriate lockfile.
 
 ## Contracts
 
@@ -32,5 +35,5 @@ Fixtures must be independently invented. Renaming or perturbing a real person, e
 - tests cover success, ambiguity, invalid input, bounds, and capability-injection attempts;
 - no network, credential, provider, private-path, or implicit repository dependency entered the core;
 - public documentation describes only implemented behavior;
-- `mise run verify` passes from a clean checkout;
+- `nix develop --no-update-lock-file --command mise run verify` passes from a clean checkout;
 - the packed archive contains only intended files.

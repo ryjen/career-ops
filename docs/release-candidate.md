@@ -3,15 +3,16 @@
 The v0.1 candidate can be built and verified without registry credentials or external publication.
 
 ```bash
-npm ci --ignore-scripts
-npm run release:candidate
+nix develop --no-update-lock-file --command npm ci --ignore-scripts
+nix develop --no-update-lock-file --command npm run release:candidate
 ```
 
 The command requires:
 
 - a clean Git worktree;
-- the exact Node version in `.nvmrc`;
-- the exact npm version in `package.json#packageManager`;
+- execution inside the repository `nix develop` environment;
+- the checked-in `flake.nix` and `flake.lock` toolchain definition;
+- the checked-in `package-lock.json` dependency graph;
 - the checked-in `release/release-plan.v1.json`;
 - complete Git history for the disclosure gate.
 
@@ -25,17 +26,19 @@ This preserves accidental-publication protection while producing the exact `.tgz
 
 The builder:
 
-1. runs the complete `npm run verify` gate;
-2. runs the bounded disclosure scanner and requires `pass`;
-3. copies only the declared public package surface to a temporary staging tree;
-4. scans the staged package for secret/local-path markers;
-5. packs the same staging tree twice and requires identical SHA-256 digests;
-6. rejects unexpected archive paths and source maps;
-7. derives a CycloneDX SBOM from the locked dependency graph;
-8. produces a dependency/license report and fails on missing dependency license metadata;
-9. installs the exact local archive into a fresh temporary downstream project using `--ignore-scripts --offline`;
-10. verifies ESM import and CLI execution from that installed archive;
-11. writes bounded candidate evidence under `.release-candidate/`.
+1. requires the Nix development environment and records the locked nixpkgs identity plus `flake.nix`/`flake.lock` digests;
+2. records the actual Node, npm, and Nix versions used by that environment;
+3. runs the complete `npm run verify` gate;
+4. runs the bounded disclosure scanner and requires `pass`;
+5. copies only the declared public package surface to a temporary staging tree;
+6. scans the staged package for secret/local-path markers;
+7. packs the same staging tree twice and requires identical SHA-256 digests;
+8. rejects unexpected archive paths and source maps;
+9. derives a CycloneDX SBOM from the locked npm dependency graph;
+10. produces a dependency/license report and fails on missing dependency license metadata;
+11. installs the exact local archive into a fresh temporary downstream project using `--ignore-scripts --offline`;
+12. verifies ESM import and CLI execution from that installed archive;
+13. writes bounded candidate evidence under `.release-candidate/`.
 
 ## Outputs
 
@@ -54,7 +57,7 @@ The output directory is ignored by Git and should not be committed as normal sou
 
 ## Provenance boundary
 
-The candidate provenance records only bounded public data: repository URL, exact commit/tree identity, package/version/archive digest, reviewed Node/npm toolchain versions, evidence-file digests, downstream verification status, and the fact that publication was not performed.
+The candidate provenance records only bounded public data: repository URL, exact commit/tree identity, package/version/archive digest, actual Node/npm/Nix versions, locked nixpkgs revision and hash, `flake.nix`/`flake.lock` digests, evidence-file digests, downstream verification status, and the fact that publication was not performed.
 
 It does not record credentials, runner names, host paths, environment dumps, provider state, or private topology.
 
