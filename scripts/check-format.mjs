@@ -3,9 +3,9 @@ import path from 'node:path';
 
 const roots = ['src', 'schemas', 'fixtures', 'release', 'test', 'scripts', 'docs', '.github'];
 const rootFiles = [
-  '.gitignore', '.nvmrc', 'README.md', 'SECURITY.md', 'SUPPORT.md',
+  '.gitignore', 'README.md', 'SECURITY.md', 'SUPPORT.md',
   'CONTRIBUTING.md', 'GOVERNANCE.md', 'CODE_OF_CONDUCT.md',
-  'package.json', 'package-lock.json', 'mise.toml',
+  'flake.nix', 'flake.lock', 'package.json', 'package-lock.json', 'mise.toml',
 ];
 const extensions = new Set(['.js', '.mjs', '.json', '.md', '.toml', '.yml', '.yaml']);
 const failures = [];
