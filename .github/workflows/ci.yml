@@ -24,17 +24,20 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Set up Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - name: Install Nix
+        uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
         with:
-          node-version-file: .nvmrc
-          cache: npm
+          extra_nix_config: |
+            experimental-features = nix-command flakes
 
-      - name: Install locked dependencies
-        run: npm ci --ignore-scripts
+      - name: Verify locked toolchain
+        run: nix flake check --no-build --no-update-lock-file
+
+      - name: Install locked package dependencies
+        run: nix develop --no-update-lock-file --command npm ci --ignore-scripts
 
       - name: Verify public package
-        run: npm run verify
+        run: nix develop --no-update-lock-file --command npm run verify
 
   release-candidate:
     needs: quality
@@ -47,20 +50,20 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Set up exact Node toolchain
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - name: Install Nix
+        uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
         with:
-          node-version-file: .nvmrc
-          cache: npm
+          extra_nix_config: |
+            experimental-features = nix-command flakes
 
-      - name: Install locked dependencies
-        run: npm ci --ignore-scripts
+      - name: Install locked package dependencies
+        run: nix develop --no-update-lock-file --command npm ci --ignore-scripts
 
       - name: Build and verify unpublished release candidate
-        run: npm run release:candidate
+        run: nix develop --no-update-lock-file --command npm run release:candidate
 
       - name: Show bounded candidate summary
-        run: cat .release-candidate/candidate.json
+        run: nix develop --no-update-lock-file --command cat .release-candidate/candidate.json
 
   dependency-review:
     if: github.event_name == 'pull_request'
@@ -73,10 +76,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Set up Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - name: Install Nix
+        uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
         with:
-          node-version-file: .nvmrc
+          extra_nix_config: |
+            experimental-features = nix-command flakes
 
       - name: Review dependencies using GitHub dependency graph
         id: dependency-review
@@ -87,4 +91,4 @@ jobs:
         if: steps.dependency-review.outcome == 'failure'
         env:
           BASE_REF: ${{ github.base_ref }}
-        run: node scripts/dependency-diff.mjs --base "origin/${BASE_REF}"
+        run: nix develop --no-update-lock-file --command node scripts/dependency-diff.mjs --base "origin/${BASE_REF}"
