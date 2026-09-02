@@ -76,16 +76,17 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
-        with:
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-
       - name: Review dependencies using GitHub dependency graph
         id: dependency-review
         continue-on-error: true
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+
+      - name: Install Nix for dependency fallback
+        if: steps.dependency-review.outcome == 'failure'
+        uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
 
       - name: Review dependency manifests without dependency graph
         if: steps.dependency-review.outcome == 'failure'
