@@ -6,7 +6,7 @@ CareerOps is a deterministic, evidence-driven framework for career operations. I
 
 The first public domain slice is opportunity normalization and validation. It converts explicit bounded source text into structured observed, normalized, inferred, and unresolved values with deterministic provenance.
 
-The package remains private until the release, namespace, disclosure, and provenance gates are complete.
+The first supported release is `v0.1.0`. The project is currently in downstream private adoption and stabilization; additional public domain slices are intentionally gated on proving immutable consumption, parity, rollback, and stabilization of this first release.
 
 ## Design principles
 
