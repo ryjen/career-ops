@@ -14,11 +14,11 @@ const forbidden = [
 ];
 const javascriptFiles = [];
 const textFiles = [];
-const textExtensions = new Set(['.js', '.mjs', '.json', '.md', '.toml', '.yml', '.yaml']);
+const textExtensions = new Set(['.js', '.mjs', '.json', '.md', '.nix', '.toml', '.yml', '.yaml']);
 const rootFiles = [
-  '.gitignore', '.nvmrc', 'README.md', 'SECURITY.md', 'SUPPORT.md',
+  '.gitignore', 'README.md', 'SECURITY.md', 'SUPPORT.md',
   'CONTRIBUTING.md', 'GOVERNANCE.md', 'CODE_OF_CONDUCT.md',
-  'package.json', 'package-lock.json', 'mise.toml',
+  'flake.nix', 'flake.lock', 'package.json', 'package-lock.json', 'mise.toml',
 ];
 
 function addFile(file) {
