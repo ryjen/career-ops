@@ -18,9 +18,9 @@ Public pull requests are untrusted. Validation runs only on fixed GitHub-hosted 
 
 ## Toolchain
 
-The repository flake is the only project toolchain definition. Hosted runners bootstrap Nix with an immutable action reference; they do not bootstrap Node, npm, Git, GitHub CLI, or `mise` independently.
+The repository flake is the only project toolchain definition. Hosted runners bootstrap a fixed Nix 2.35.2 installer through an immutable action reference; they do not bootstrap Node, npm, Git, GitHub CLI, or `mise` independently.
 
-`flake.lock` pins nixpkgs, and project commands run through `nix develop --no-update-lock-file`. CI evaluates the flake with `nix flake check --no-build --no-update-lock-file` before package verification. This prevents CI from silently changing toolchain inputs while preserving the hosted-runner boundary required for untrusted public pull requests.
+`flake.lock` pins nixpkgs, and project commands run through `nix develop --no-update-lock-file`. CI evaluates the flake with `nix flake check --no-build --no-update-lock-file` before package verification. This prevents CI from silently changing either the Nix evaluator or project toolchain inputs while preserving the hosted-runner boundary required for untrusted public pull requests.
 
 ## Dependency review
 
