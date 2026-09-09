@@ -8,6 +8,10 @@ The first public domain slice is opportunity normalization and validation. It co
 
 The first supported release is `v0.1.0`. The project is currently in downstream private adoption and stabilization; additional public domain slices are intentionally gated on proving immutable consumption, parity, rollback, and stabilization of this first release.
 
+## Design story
+
+For the longer-form reasoning behind CareerOps—evidence classes, canonical truth and overlays, issue-based intake, bounded local execution, and human submission—read [CareerOps: Building a Governed AI-Assisted Job Application Pipeline](https://ryanjennin.gs/posts/careerops-governed-ai-assisted-job-application-pipeline/). This repository remains authoritative for current public contracts, behavior, and project status.
+
 ## Design principles
 
 - explicit bounded input rather than implicit discovery;
