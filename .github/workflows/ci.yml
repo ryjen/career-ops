@@ -25,7 +25,7 @@ jobs:
           persist-credentials: false
 
       - name: Install Nix
-        uses: cachix/install-nix-action@448cde739abec1eaf0646249e3d25bb8d9bc7702 # v31.11.2
+        uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31.11.3
         with:
           install_url: https://releases.nixos.org/nix/nix-2.35.3/install
           extra_nix_config: |
@@ -52,7 +52,7 @@ jobs:
           persist-credentials: false
 
       - name: Install Nix
-        uses: cachix/install-nix-action@448cde739abec1eaf0646249e3d25bb8d9bc7702 # v31.11.2
+        uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31.11.3
         with:
           install_url: https://releases.nixos.org/nix/nix-2.35.3/install
           extra_nix_config: |
@@ -85,7 +85,7 @@ jobs:
 
       - name: Install Nix for dependency fallback
         if: steps.dependency-review.outcome == 'failure'
-        uses: cachix/install-nix-action@448cde739abec1eaf0646249e3d25bb8d9bc7702 # v31.11.2
+        uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31.11.3
         with:
           install_url: https://releases.nixos.org/nix/nix-2.35.3/install
           extra_nix_config: |
